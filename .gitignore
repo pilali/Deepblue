@@ -1,0 +1,14 @@
+# Build outputs
+deepblue.lv2/deepblue.so
+build/
+juce/build/
+*.o
+*.so
+
+# Local tooling
+.claude/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~

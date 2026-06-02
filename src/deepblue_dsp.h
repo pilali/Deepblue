@@ -1,0 +1,47 @@
+#ifndef DEEPBLUE_DSP_H
+#define DEEPBLUE_DSP_H
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {           /* indispensable : JUCE est du C++ */
+#endif
+
+/* One value per control port, copied from LV2 ports / JUCE parameters.
+   Raw values are accepted: the clamp happens inside the process functions,
+   exactly as the LV2 run() does. Field names mirror the .ttl symbols
+   (idx 2..8). */
+typedef struct {
+    float depth;        /* idx 2  [0 – 1]   macro: surface → deep water     */
+    float tone;         /* idx 3  [0 – 1]   bright/dark trim around depth    */
+    float wobble;       /* idx 4  [0 – 1]   pitch-wavering depth             */
+    float wobble_rate;  /* idx 5  [0.05 – 2] Hz   wavering speed             */
+    float dispersion;   /* idx 6  [0 – 1]   all-pass frequency smear         */
+    float mix;          /* idx 7  [0 – 1]   dry/wet                          */
+    float level;        /* idx 8  [0 – 2]   output gain                      */
+} DeepblueParams;
+
+typedef struct DeepblueDsp DeepblueDsp;      /* opaque state */
+
+DeepblueDsp* deepblue_dsp_new(double sample_rate);
+void         deepblue_dsp_free(DeepblueDsp*);
+void         deepblue_dsp_reset(DeepblueDsp*);   /* = activate() : clears filters/state */
+
+/* Process n mono samples. in may equal out (in-place is fine). */
+void         deepblue_dsp_process(DeepblueDsp*, const DeepblueParams*,
+                                  const float* in, float* out, uint32_t n);
+
+/* Process n samples of true stereo. The two channels run independent state
+   (anti-phase wobble LFO, decorrelated random drift, slightly spread
+   dispersion break frequencies) so the underwater image gains natural width.
+   Feed the same pointer to inL and inR for a mono source → decorrelated
+   stereo. In-place is fine (read happens before write per sample). */
+void         deepblue_dsp_process_stereo(DeepblueDsp*, const DeepblueParams*,
+                                         const float* inL, const float* inR,
+                                         float* outL, float* outR, uint32_t n);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* DEEPBLUE_DSP_H */
