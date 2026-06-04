@@ -16,10 +16,9 @@
     lv2:port
 
     # ── Audio I/O ────────────────────────────────────────────────────────
-    # Every mandatory port comes first and contiguous; the single optional port
-    # (the right input) is dead last (index 15) with nothing after it. mod-host
-    # connects ports in order and gets fragile once it hits an optional port it
-    # doesn't wire up, so a mandatory port must never sit after an optional one.
+    # Every port is mandatory and contiguous — no optional ports at all, the
+    # layout hosts (mod-host) are most robust with. Mono in → stereo out: the
+    # single input is decorrelated into a wide stereo image by the core.
     [
         a lv2:AudioPort, lv2:InputPort ;
         lv2:index 0 ;
@@ -157,19 +156,4 @@
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
         lv2:default 0.5
-    ] ,
-
-    # ── Optional right input (LAST port, nothing after it) ───────────────
-    # The plugin is mono-in → stereo-out by default: the right OUTPUT is
-    # mandatory (index 2, above) so the stereo path — and with it the Immersion
-    # field and the stereo spread of the bubbles/reverb — always runs. The
-    # right INPUT stays optional: a mono source feeds both channels and is
-    # decorrelated by the core; connect it for a true stereo-in effect. It is
-    # the only optional port and sits last so no mandatory port follows it.
-    [
-        a lv2:AudioPort, lv2:InputPort ;
-        lv2:index 15 ;
-        lv2:symbol "audio_in_r" ;
-        lv2:name   "Audio In R" ;
-        lv2:portProperty lv2:connectionOptional
     ] .
