@@ -5,10 +5,12 @@
 //   - holds port pointers + a DeepblueDsp* instance,
 //   - maps the connected control ports into a DeepblueParams on each run().
 //
-// Mono/stereo is handled with optional right-side ports (like Megalo): when the
-// host connects audio_out_r the stereo path runs, otherwise the mono path. The
-// right *input* is also optional — if the host gives us a stereo out but only a
-// mono in, the mono signal feeds both channels and is decorrelated by the core.
+// The plugin is mono-in → stereo-out by default: the right OUTPUT is mandatory,
+// so the stereo path always runs (the Immersion field and the stereo spread of
+// the bubbles/reverb need two channels to exist). The right INPUT stays
+// optional — a mono source feeds both channels and the core decorrelates them;
+// connect it for a true stereo-in effect. The mono-out branch below is only a
+// safety net for a host that ignores the right output.
 #include <lv2/core/lv2.h>
 #include <array>
 #include <cstdint>
@@ -38,7 +40,7 @@ enum Port : uint32_t {
     P_REVERB       = 12,   // dark diffuse reverb amount       [0 – 1]
     P_REVERB_SIZE  = 13,   // reverb decay / size              [0 – 1]
     P_AUDIO_IN_R   = 14,   // optional right input  — connectionOptional
-    P_AUDIO_OUT_R  = 15,   // optional right output — connected ⇒ stereo path
+    P_AUDIO_OUT_R  = 15,   // mandatory right output — always stereo out
     P_COUNT        = 16
 };
 

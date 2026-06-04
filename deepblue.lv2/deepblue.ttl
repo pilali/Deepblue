@@ -148,10 +148,12 @@
         lv2:default 0.5
     ] ,
 
-    # ── Optional right-side ports (last, after every control) ────────────
-    # Connected by the host ⇒ stereo. Right output unconnected ⇒ the plugin
-    # runs as a plain mono effect. Right input unconnected (but right output
-    # connected) ⇒ mono-in, decorrelated-stereo-out.
+    # ── Right-side audio ports (last, after every control) ───────────────
+    # The plugin is mono-in → stereo-out by default: the right OUTPUT is
+    # mandatory so the stereo path (and with it the Immersion field and the
+    # stereo spread of the bubbles/reverb) always runs. The right INPUT stays
+    # optional — a mono source feeds both channels and is decorrelated by the
+    # core; connect it for a true stereo-in effect.
     [
         a lv2:AudioPort, lv2:InputPort ;
         lv2:index 14 ;
@@ -163,6 +165,5 @@
         a lv2:AudioPort, lv2:OutputPort ;
         lv2:index 15 ;
         lv2:symbol "audio_out_r" ;
-        lv2:name   "Audio Out R" ;
-        lv2:portProperty lv2:connectionOptional
+        lv2:name   "Audio Out R"
     ] .

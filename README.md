@@ -13,8 +13,11 @@ Cross-format, host-agnostic DSP core shared by every wrapper:
 - **LV2** — primary target: MOD Dwarf, Raspberry Pi 5 (MODEP), desktop Linux.
 - **VST3 / AU / Standalone** via JUCE — macOS universal (arm64 + x86_64) & Windows.
 
-Mono and stereo are both supported. On the stereo path a mono source is
-decorrelated into a wide image (the eventual "loss of localisation" feature).
+The plugin is **mono-in → stereo-out** by default (the right output is
+mandatory), so the stereo features — the Immersion "loss of localisation" field
+and the stereo spread of the bubbles and reverb — are always live. A mono source
+is decorrelated into a wide image; connect the optional right input for a true
+stereo-in effect.
 
 ## Signal chain
 
