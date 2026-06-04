@@ -16,6 +16,10 @@
     lv2:port
 
     # ── Audio I/O ────────────────────────────────────────────────────────
+    # Every mandatory port comes first and contiguous; the single optional port
+    # (the right input) is dead last (index 15) with nothing after it. mod-host
+    # connects ports in order and gets fragile once it hits an optional port it
+    # doesn't wire up, so a mandatory port must never sit after an optional one.
     [
         a lv2:AudioPort, lv2:InputPort ;
         lv2:index 0 ;
@@ -28,11 +32,18 @@
         lv2:symbol "audio_out" ;
         lv2:name   "Audio Out"
     ] ,
+    # Right OUTPUT is mandatory — mono-in → stereo-out by default.
+    [
+        a lv2:AudioPort, lv2:OutputPort ;
+        lv2:index 2 ;
+        lv2:symbol "audio_out_r" ;
+        lv2:name   "Audio Out R"
+    ] ,
 
     # ── Controls ─────────────────────────────────────────────────────────
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   2 ;
+        lv2:index   3 ;
         lv2:symbol  "depth" ;
         lv2:name    "Depth" ;
         lv2:minimum 0.0 ;
@@ -41,7 +52,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   3 ;
+        lv2:index   4 ;
         lv2:symbol  "tone" ;
         lv2:name    "Tone" ;
         lv2:minimum 0.0 ;
@@ -50,7 +61,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   4 ;
+        lv2:index   5 ;
         lv2:symbol  "wobble" ;
         lv2:name    "Wobble" ;
         lv2:minimum 0.0 ;
@@ -59,7 +70,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   5 ;
+        lv2:index   6 ;
         lv2:symbol  "wobble_rate" ;
         lv2:name    "Wobble Rate" ;
         lv2:minimum 0.05 ;
@@ -70,7 +81,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   6 ;
+        lv2:index   7 ;
         lv2:symbol  "dispersion" ;
         lv2:name    "Dispersion" ;
         lv2:minimum 0.0 ;
@@ -79,7 +90,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   7 ;
+        lv2:index   8 ;
         lv2:symbol  "mix" ;
         lv2:name    "Mix" ;
         lv2:minimum 0.0 ;
@@ -88,7 +99,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   8 ;
+        lv2:index   9 ;
         lv2:symbol  "level" ;
         lv2:name    "Level" ;
         lv2:minimum 0.0 ;
@@ -99,7 +110,7 @@
     # ── Bubble layer (step 4) ────────────────────────────────────────────
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   9 ;
+        lv2:index   10 ;
         lv2:symbol  "bubbles" ;
         lv2:name    "Bubbles" ;
         lv2:minimum 0.0 ;
@@ -108,7 +119,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   10 ;
+        lv2:index   11 ;
         lv2:symbol  "bubble_size" ;
         lv2:name    "Bubble Size" ;
         lv2:minimum 0.0 ;
@@ -120,7 +131,7 @@
     # Cross-channel: only audible on the stereo path.
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   11 ;
+        lv2:index   12 ;
         lv2:symbol  "immersion" ;
         lv2:name    "Immersion" ;
         lv2:minimum 0.0 ;
@@ -131,7 +142,7 @@
     # ── Dark diffuse reverb (step 5) ─────────────────────────────────────
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   12 ;
+        lv2:index   13 ;
         lv2:symbol  "reverb" ;
         lv2:name    "Reverb" ;
         lv2:minimum 0.0 ;
@@ -140,7 +151,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   13 ;
+        lv2:index   14 ;
         lv2:symbol  "reverb_size" ;
         lv2:name    "Reverb Size" ;
         lv2:minimum 0.0 ;
@@ -148,22 +159,17 @@
         lv2:default 0.5
     ] ,
 
-    # ── Right-side audio ports (last, after every control) ───────────────
+    # ── Optional right input (LAST port, nothing after it) ───────────────
     # The plugin is mono-in → stereo-out by default: the right OUTPUT is
-    # mandatory so the stereo path (and with it the Immersion field and the
-    # stereo spread of the bubbles/reverb) always runs. The right INPUT stays
-    # optional — a mono source feeds both channels and is decorrelated by the
-    # core; connect it for a true stereo-in effect.
+    # mandatory (index 2, above) so the stereo path — and with it the Immersion
+    # field and the stereo spread of the bubbles/reverb — always runs. The
+    # right INPUT stays optional: a mono source feeds both channels and is
+    # decorrelated by the core; connect it for a true stereo-in effect. It is
+    # the only optional port and sits last so no mandatory port follows it.
     [
         a lv2:AudioPort, lv2:InputPort ;
-        lv2:index 14 ;
+        lv2:index 15 ;
         lv2:symbol "audio_in_r" ;
         lv2:name   "Audio In R" ;
         lv2:portProperty lv2:connectionOptional
-    ] ,
-    [
-        a lv2:AudioPort, lv2:OutputPort ;
-        lv2:index 15 ;
-        lv2:symbol "audio_out_r" ;
-        lv2:name   "Audio Out R"
     ] .

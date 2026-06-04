@@ -21,31 +21,38 @@
 static constexpr char DEEPBLUE_URI[] = "https://github.com/pilali/deepblue";
 
 // ── Port indices ───────────────────────────────────────────────────────────
-// All control ports are kept contiguous (2..13) BEFORE the optional audio
-// ports (14, 15). Some hosts only reliably connect control ports that precede
-// the audio ports, so the optional right-side audio pair comes last.
+// Layout rule: every MANDATORY port comes first and contiguous, and the single
+// OPTIONAL port (the right input) is dead last, with nothing after it. Some
+// hosts (mod-host) connect ports in order and get fragile once they hit an
+// optional port they don't wire up — so a mandatory port must never sit after
+// an optional one, or the host can leave it unconnected and crash.
+//   0  audio_in      (mandatory)
+//   1  audio_out     (mandatory)
+//   2  audio_out_r   (mandatory — mono-in → stereo-out default)
+//   3..14 controls   (contiguous)
+//   15 audio_in_r    (OPTIONAL — last, nothing after it)
 enum Port : uint32_t {
     P_AUDIO_IN     =  0,
     P_AUDIO_OUT    =  1,
-    P_DEPTH        =  2,   // macro: surface → deep            [0 – 1]
-    P_TONE         =  3,   // bright/dark trim                 [0 – 1]
-    P_WOBBLE       =  4,   // pitch-wavering depth             [0 – 1]
-    P_WOBBLE_RATE  =  5,   // wavering speed Hz                [0.05 – 2]
-    P_DISPERSION   =  6,   // allpass smear                    [0 – 1]
-    P_MIX          =  7,   // dry/wet                          [0 – 1]
-    P_LEVEL        =  8,   // output gain                      [0 – 2]
-    P_BUBBLES      =  9,   // Minnaert bubble-stream presence  [0 – 1]
-    P_BUBBLE_SIZE  = 10,   // bubble register (small → big)    [0 – 1]
-    P_IMMERSION    = 11,   // loss of localisation (stereo)    [0 – 1]
-    P_REVERB       = 12,   // dark diffuse reverb amount       [0 – 1]
-    P_REVERB_SIZE  = 13,   // reverb decay / size              [0 – 1]
-    P_AUDIO_IN_R   = 14,   // optional right input  — connectionOptional
-    P_AUDIO_OUT_R  = 15,   // mandatory right output — always stereo out
+    P_AUDIO_OUT_R  =  2,   // mandatory right output — always stereo out
+    P_DEPTH        =  3,   // macro: surface → deep            [0 – 1]
+    P_TONE         =  4,   // bright/dark trim                 [0 – 1]
+    P_WOBBLE       =  5,   // pitch-wavering depth             [0 – 1]
+    P_WOBBLE_RATE  =  6,   // wavering speed Hz                [0.05 – 2]
+    P_DISPERSION   =  7,   // allpass smear                    [0 – 1]
+    P_MIX          =  8,   // dry/wet                          [0 – 1]
+    P_LEVEL        =  9,   // output gain                      [0 – 2]
+    P_BUBBLES      = 10,   // Minnaert bubble-stream presence  [0 – 1]
+    P_BUBBLE_SIZE  = 11,   // bubble register (small → big)    [0 – 1]
+    P_IMMERSION    = 12,   // loss of localisation (stereo)    [0 – 1]
+    P_REVERB       = 13,   // dark diffuse reverb amount       [0 – 1]
+    P_REVERB_SIZE  = 14,   // reverb decay / size              [0 – 1]
+    P_AUDIO_IN_R   = 15,   // optional right input  — connectionOptional (last)
     P_COUNT        = 16
 };
 
-// Control input ports stored in the ctl[] array: indices 2..13 (contiguous).
-static constexpr uint32_t N_CTL = P_AUDIO_IN_R - 2;
+// Control input ports stored in the ctl[] array: indices 3..14 (contiguous).
+static constexpr uint32_t N_CTL = P_REVERB_SIZE - P_DEPTH + 1;
 
 // ── Plugin instance ────────────────────────────────────────────────────────
 struct DeepblueLV2 {
@@ -59,7 +66,7 @@ struct DeepblueLV2 {
 };
 
 static inline float ctl(const DeepblueLV2* p, Port port) noexcept {
-    const float* ptr = p->ctl[port - 2];
+    const float* ptr = p->ctl[port - P_DEPTH];
     return ptr ? *ptr : 0.0f;
 }
 
@@ -83,12 +90,12 @@ static void connect_port(LV2_Handle handle, uint32_t port, void* data)
         p->audio_in = static_cast<const float*>(data);
     else if (port == P_AUDIO_OUT)
         p->audio_out = static_cast<float*>(data);
-    else if (port == P_AUDIO_IN_R)
-        p->audio_in_r = static_cast<const float*>(data);
     else if (port == P_AUDIO_OUT_R)
         p->audio_out_r = static_cast<float*>(data);
-    else if (port >= 2 && port < P_AUDIO_IN_R)
-        p->ctl[port - 2] = static_cast<const float*>(data);
+    else if (port == P_AUDIO_IN_R)
+        p->audio_in_r = static_cast<const float*>(data);
+    else if (port >= P_DEPTH && port <= P_REVERB_SIZE)
+        p->ctl[port - P_DEPTH] = static_cast<const float*>(data);
 }
 
 static void activate(LV2_Handle handle)
