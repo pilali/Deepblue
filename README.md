@@ -103,9 +103,10 @@ Both default to **6** (MOD Dwarf), **12** (native), **16** (Pi 5 / desktop JUCE)
 
 Steps 1–5 (DSP) implemented: Absorption, Wobble, Depth macro, Dry/Wet,
 Dispersion, the Minnaert bubble layer, the StereoField loss-of-localisation
-stage, and the dark diffuse reverb (a 4-line FDN). Remaining for step 5:
-presets, MOD modgui and a custom JUCE UI. Step 6 finalises the JUCE VST3/AU/
-Windows builds.
+stage, and the dark diffuse reverb (a 4-line FDN). Five LV2 presets ship in the
+bundle (Shallows, Deep Current, Abyss, Champagne, Submerged Cathedral).
+Remaining for step 5: MOD modgui and a custom JUCE UI. Step 6 finalises the
+JUCE VST3/AU/Windows builds.
 
 ## License
 

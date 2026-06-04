@@ -1,7 +1,33 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <https://github.com/pilali/deepblue>
     a lv2:Plugin ;
     lv2:binary <deepblue.so> ;
     rdfs:seeAlso <deepblue.ttl> .
+
+<Shallows.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Shallows.ttl> .
+
+<DeepCurrent.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <DeepCurrent.ttl> .
+
+<Abyss.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Abyss.ttl> .
+
+<Champagne.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Champagne.ttl> .
+
+<SubmergedCathedral.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <SubmergedCathedral.ttl> .

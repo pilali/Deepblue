@@ -47,13 +47,12 @@ set_target_properties(deepblue PROPERTIES
 message(STATUS "Dispersion stages: ${DEEPBLUE_DISP_STAGES}")
 message(STATUS "Bubble voices:     ${DEEPBLUE_BUBBLE_VOICES}")
 
-# Copy TTL files into the build bundle next to the freshly built .so
+# Copy every TTL in the source bundle (manifest, plugin descriptor and the
+# preset files) next to the freshly built .so.
+file(GLOB DEEPBLUE_TTLS "${CMAKE_SOURCE_DIR}/deepblue.lv2/*.ttl")
 add_custom_command(TARGET deepblue POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/deepblue.lv2/manifest.ttl"
-        "${CMAKE_SOURCE_DIR}/deepblue.lv2/deepblue.ttl"
-        "${BUNDLE_DIR}/"
-    COMMENT "Copying TTL files to bundle"
+    COMMAND ${CMAKE_COMMAND} -E copy ${DEEPBLUE_TTLS} "${BUNDLE_DIR}/"
+    COMMENT "Copying TTL files (incl. presets) to bundle"
 )
 
 install(DIRECTORY "${BUNDLE_DIR}"
