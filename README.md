@@ -1,5 +1,7 @@
 # Deepblue
 
+[![build](https://github.com/pilali/Deepblue/actions/workflows/build.yml/badge.svg)](https://github.com/pilali/Deepblue/actions/workflows/build.yml)
+
 An "underwater" effect for guitar — what a sound would feel like heard through
 water. The design is grounded in the physics of underwater sound rather than a
 generic "muffled reverb": frequency-dependent absorption, the watery pitch
@@ -92,6 +94,13 @@ cmake --build juce/build
 
 macOS builds are universal (arm64 + x86_64) by default. Pass
 `-DLOCAL_JUCE_DIR=/path/to/JUCE` for offline builds.
+
+### Prebuilt binaries (CI)
+
+Every push is built by [GitHub Actions](.github/workflows/build.yml): the LV2
+bundle (Linux x86-64 and Raspberry Pi 5 / aarch64) and the JUCE VST3 / AU /
+Standalone for Linux, macOS (universal) and Windows. Grab them from the run's
+artefacts. The MOD Dwarf package is built separately via `mod-plugin-builder`.
 
 ## Tuning knob: dispersion chain length
 
