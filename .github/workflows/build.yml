@@ -1,0 +1,114 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+    tags:     [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# JUCE is fetched at configure time; pin it so caches stay valid.
+env:
+  JUCE_TAG: "8.0.8"
+
+jobs:
+  # ── LV2 (Linux native + Raspberry Pi 5 cross) ──────────────────────────────
+  lv2-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lv2-dev pkg-config build-essential g++-aarch64-linux-gnu
+
+      - name: Build native LV2
+        run: |
+          make clean
+          make TARGET=native
+          file deepblue.lv2/deepblue.so
+
+      - name: Upload native LV2 bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: deepblue-lv2-linux-x86_64
+          path: deepblue.lv2
+
+      - name: Build Raspberry Pi 5 LV2 (cross, aarch64)
+        run: |
+          make clean
+          make TARGET=rpi5
+          file deepblue.lv2/deepblue.so
+          mkdir -p dist-rpi5/deepblue.lv2
+          cp -r deepblue.lv2/* dist-rpi5/deepblue.lv2/
+
+      - name: Upload Raspberry Pi 5 LV2 bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: deepblue-lv2-rpi5-aarch64
+          path: dist-rpi5/deepblue.lv2
+
+  # ── JUCE plugins (VST3 / AU / Standalone) ──────────────────────────────────
+  juce:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux-x86_64
+          - os: macos-latest
+            name: macos-universal
+          - os: windows-latest
+            name: windows-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux JUCE dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev libjack-jackd2-dev \
+            libfreetype6-dev libfontconfig1-dev \
+            libx11-dev libxcomposite-dev libxcursor-dev libxext-dev \
+            libxinerama-dev libxrandr-dev libxrender-dev \
+            libglu1-mesa-dev mesa-common-dev
+
+      # Cache the FetchContent JUCE clone so later runs skip the download/build.
+      - name: Cache JUCE
+        uses: actions/cache@v4
+        with:
+          path: juce/build/_deps
+          key: juce-${{ runner.os }}-${{ env.JUCE_TAG }}
+
+      - name: Configure
+        run: >
+          cmake -S juce -B juce/build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCOPY_AFTER_BUILD=OFF
+          -DJUCE_TAG=${{ env.JUCE_TAG }}
+
+      - name: Build
+        run: cmake --build juce/build --config Release --parallel
+
+      - name: Collect artefacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          # juce_add_plugin writes every format under <target>_artefacts/<cfg>/
+          base=$(find juce/build -type d -name "Deepblue_artefacts" | head -1)
+          echo "artefacts at: $base"
+          for fmt in VST3 AU Standalone; do
+            if [ -d "$base/Release/$fmt" ]; then cp -R "$base/Release/$fmt" "dist/$fmt"; fi
+            if [ -d "$base/$fmt" ];         then cp -R "$base/$fmt"         "dist/$fmt"; fi
+          done
+          ls -R dist || true
+
+      - name: Upload JUCE artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deepblue-juce-${{ matrix.name }}
+          path: dist
