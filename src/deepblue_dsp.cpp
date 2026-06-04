@@ -5,13 +5,15 @@
 // and the JUCE wrapper (juce/PluginProcessor.cpp). Each wrapper only maps host
 // controls onto DeepblueParams and calls process().
 //
-// Signal chain (steps 1–4):
-//   in → Absorption (4-pole low-pass) → Wobble (modulated fractional delay)
-//      → Dispersion (allpass chain) → [StereoField] → Dry/Wet → ×level → out
-//                                                          ⊕ Minnaert bubble stream
+// Signal chain (steps 1–5):
+//   in → Absorption → Wobble → Dispersion → [StereoField] → ⊕bubbles → ⊕reverb
+//      → Dry/Wet → ×level → out
 //
-// StereoField (the underwater "loss of localisation") is a cross-channel stage,
-// so it runs only on the stereo path, on the wet signal before the dry/wet mix.
+// Everything downstream of the per-channel chain — the StereoField, the Minnaert
+// bubble stream and the dark diffuse reverb — is part of the "wet" underwater
+// signal, so the single Mix knob balances the dry guitar against the whole
+// treatment. StereoField is cross-channel (stereo path only); the reverb is fed
+// by the wet signal (bubbles included) so the bubbles reverberate in the space.
 //
 // The single "Depth" macro is the physical through-line: deeper water means
 // stronger high-frequency absorption, more pitch wavering and more dispersion,
@@ -30,6 +32,7 @@
 #include "dispersion.hpp"
 #include "bubbles.hpp"
 #include "stereofield.hpp"
+#include "reverb.hpp"
 
 // Length of the dispersion allpass chain. Short on the MOD Dwarf (Cortex-A35),
 // long on the Pi 5 / desktop. Overridden by the build (-DDEEPBLUE_DISP_STAGES).
@@ -81,6 +84,9 @@ struct Macro {
     float bubbleSize;      // 0..1, bubble register
     float depthMeters;     // depth macro mapped to metres of water
     float fieldAmt;        // 0..1, loss-of-localisation amount (stereo only)
+    float reverbAmt;       // 0..1, reverb send into the wet
+    float reverbG;         // feedback gain (decay / size)
+    float reverbDamp;      // in-loop HF damping (darkness), depth/tone-derived
 };
 
 static Macro computeMacro(const DeepblueParams* pr) {
@@ -110,6 +116,12 @@ static Macro computeMacro(const DeepblueParams* pr) {
     // Depth biases the immersion the way it biases wobble/dispersion: deeper
     // water pulls the whole image toward "everywhere / inside the head".
     m.fieldAmt    = clampf(clampf(pr->immersion, 0.0f, 1.0f) * (0.4f + 0.6f * d), 0.0f, 1.0f);
+
+    // Reverb: amount is direct; size sets the decay (feedback gain); darkness
+    // tracks the water — deeper damps more highs, the Tone trim brightens it.
+    m.reverbAmt  = clampf(pr->reverb, 0.0f, 1.0f);
+    m.reverbG    = 0.55f + 0.42f * clampf(pr->reverb_size, 0.0f, 1.0f);   // 0.55 → 0.97
+    m.reverbDamp = clampf(0.25f + 0.50f * d - (t - 0.5f) * 0.4f, 0.10f, 0.92f);
     return m;
 }
 
@@ -148,31 +160,52 @@ static inline float wobbleBase(double sr) {
     return WOBBLE_BASE_MS * (float)sr / 1000.0f;
 }
 
-static void processChannel(Channel& c, const Macro& m, double sr,
-                           const float* in, float* out, uint32_t n)
+// The bubble stream is one shared generator (stereo pings); the reverb is one
+// shared stereo FDN. Both feed the wet signal before the dry/wet mix.
+static void processMono(Channel& c, BubbleStream& bub, Reverb& rev,
+                        const Macro& m, double sr,
+                        const float* in, float* out, uint32_t n)
 {
     prepChannel(c, m, sr);
+    bub.setParams(m.bubbleAmt, m.bubbleSize, m.depthMeters, m.cutoff);
+    rev.setParams(m.reverbG, m.reverbDamp);
     const float baseS = wobbleBase(sr);
     const float excS  = wobbleExc(m, sr);
+    const bool  doRev = m.reverbAmt > 0.0f;
 
     for (uint32_t i = 0; i < n; ++i) {
-        const float x   = in[i];
-        const float wet = channelWet(c, m, baseS, excS, x);
-        out[i] = (x * (1.0f - m.mix) + wet * m.mix) * m.level;   // dry/wet + gain
+        const float x = in[i];
+        float w = channelWet(c, m, baseS, excS, x);
+
+        float bl, br;
+        bub.tick(bl, br);
+        w += (bl + br) * 0.5f * m.bubbleAmt;        // bubbles folded to mono
+
+        if (doRev) {
+            float rL, rR;
+            rev.process(w, w, rL, rR);
+            w += (rL + rR) * 0.5f * m.reverbAmt;
+        }
+
+        out[i] = (x * (1.0f - m.mix) + w * m.mix) * m.level;
     }
 }
 
 // Stereo: both channels share one sample loop so the StereoField can act across
-// them on the wet signal, before each channel's dry/wet mix and gain.
+// them, then bubbles and reverb are summed into the wet before dry/wet + gain.
 static void processStereo(Channel& L, Channel& R, StereoField& field,
+                          BubbleStream& bub, Reverb& rev,
                           const Macro& m, double sr,
                           const float* inL, const float* inR,
                           float* outL, float* outR, uint32_t n)
 {
     prepChannel(L, m, sr);
     prepChannel(R, m, sr);
+    bub.setParams(m.bubbleAmt, m.bubbleSize, m.depthMeters, m.cutoff);
+    rev.setParams(m.reverbG, m.reverbDamp);
     const float baseS = wobbleBase(sr);
     const float excS  = wobbleExc(m, sr);   // depth-derived, identical L/R
+    const bool  doRev = m.reverbAmt > 0.0f;
 
     for (uint32_t i = 0; i < n; ++i) {
         const float xL = inL[i], xR = inR[i];
@@ -181,36 +214,20 @@ static void processStereo(Channel& L, Channel& R, StereoField& field,
 
         field.process(m.fieldAmt, wL, wR);   // loss of localisation, on the wet
 
+        float bl, br;
+        bub.tick(bl, br);
+        wL += bl * m.bubbleAmt;
+        wR += br * m.bubbleAmt;
+
+        if (doRev) {
+            float rL, rR;
+            rev.process(wL, wR, rL, rR);
+            wL += rL * m.reverbAmt;
+            wR += rR * m.reverbAmt;
+        }
+
         outL[i] = (xL * (1.0f - m.mix) + wL * m.mix) * m.level;
         outR[i] = (xR * (1.0f - m.mix) + wR * m.mix) * m.level;
-    }
-}
-
-// The bubble stream is one shared generator (not per-channel): it emits stereo
-// pings directly, so duplicating it per channel would double the density and
-// collapse the spatial spread. It is added on top of the dry/wet guitar path,
-// scaled by its own "bubbles" amount and the master level.
-static void addBubbles(BubbleStream& b, const Macro& m, double sr,
-                       float* outL, float* outR, uint32_t n)
-{
-    // bedCut tracks the water's absorption cutoff so deep water darkens the bed.
-    b.setParams(m.bubbleAmt, m.bubbleSize, m.depthMeters, m.cutoff);
-    if (m.bubbleAmt <= 0.0f && !b.active()) return;   // nothing to do, stay cheap
-
-    const float g = m.bubbleAmt * m.level;
-    if (outR) {
-        for (uint32_t i = 0; i < n; ++i) {
-            float bl, br;
-            b.tick(bl, br);
-            outL[i] += bl * g;
-            outR[i] += br * g;
-        }
-    } else {
-        for (uint32_t i = 0; i < n; ++i) {
-            float bl, br;
-            b.tick(bl, br);
-            outL[i] += (bl + br) * 0.5f * g;          // fold to mono
-        }
     }
 }
 
@@ -220,6 +237,7 @@ struct DeepblueDsp {
     Channel      L, R;
     BubbleStream bubbles;
     StereoField  field;
+    Reverb       reverb;
 };
 
 DeepblueDsp* deepblue_dsp_new(double sample_rate)
@@ -234,6 +252,7 @@ DeepblueDsp* deepblue_dsp_new(double sample_rate)
     p->R.init(sample_rate, 0x9E3779B9u, 0.25, 1.06f);
     p->bubbles.init(sample_rate, 0xC0FFEE11u);
     p->field.init(sample_rate);
+    p->reverb.init(sample_rate);
     return p;
 }
 
@@ -248,14 +267,14 @@ void deepblue_dsp_reset(DeepblueDsp* p)
     p->R.reset();
     p->bubbles.reset();
     p->field.reset();
+    p->reverb.reset();
 }
 
 void deepblue_dsp_process(DeepblueDsp* p, const DeepblueParams* pr,
                           const float* in, float* out, uint32_t n)
 {
     const Macro m = computeMacro(pr);
-    processChannel(p->L, m, p->sr, in, out, n);
-    addBubbles(p->bubbles, m, p->sr, out, nullptr, n);
+    processMono(p->L, p->bubbles, p->reverb, m, p->sr, in, out, n);
 }
 
 void deepblue_dsp_process_stereo(DeepblueDsp* p, const DeepblueParams* pr,
@@ -263,6 +282,6 @@ void deepblue_dsp_process_stereo(DeepblueDsp* p, const DeepblueParams* pr,
                                  float* outL, float* outR, uint32_t n)
 {
     const Macro m = computeMacro(pr);
-    processStereo(p->L, p->R, p->field, m, p->sr, inL, inR, outL, outR, n);
-    addBubbles(p->bubbles, m, p->sr, outL, outR, n);
+    processStereo(p->L, p->R, p->field, p->bubbles, p->reverb,
+                  m, p->sr, inL, inR, outL, outR, n);
 }

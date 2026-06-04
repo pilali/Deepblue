@@ -39,7 +39,7 @@ LV2FLAGS ?= $(shell pkg-config --cflags lv2 2>/dev/null)
 BUNDLE  = deepblue.lv2
 BINARY  = $(BUNDLE)/deepblue.so
 SOURCES = src/plugin.cpp src/deepblue_dsp.cpp src/glibc_compat.cpp
-HEADERS = src/deepblue_dsp.h src/biquad.hpp src/delayline.hpp src/lfo.hpp src/dispersion.hpp src/bubbles.hpp src/stereofield.hpp
+HEADERS = src/deepblue_dsp.h src/biquad.hpp src/delayline.hpp src/lfo.hpp src/dispersion.hpp src/bubbles.hpp src/stereofield.hpp src/reverb.hpp
 
 all: $(BINARY)
 

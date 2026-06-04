@@ -146,4 +146,24 @@
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
         lv2:default 0.4
+    ] ,
+
+    # ── Dark diffuse reverb (step 5) ─────────────────────────────────────
+    [
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index   14 ;
+        lv2:symbol  "reverb" ;
+        lv2:name    "Reverb" ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+        lv2:default 0.25
+    ] ,
+    [
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index   15 ;
+        lv2:symbol  "reverb_size" ;
+        lv2:name    "Reverb Size" ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+        lv2:default 0.5
     ] .

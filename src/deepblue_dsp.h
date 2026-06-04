@@ -22,6 +22,8 @@ typedef struct {
     float bubbles;      /* idx 11 [0 – 1]   Minnaert bubble-stream presence  */
     float bubble_size;  /* idx 12 [0 – 1]   bubble register (small → big)    */
     float immersion;    /* idx 13 [0 – 1]   loss of localisation (stereo)    */
+    float reverb;       /* idx 14 [0 – 1]   dark diffuse reverb amount       */
+    float reverb_size;  /* idx 15 [0 – 1]   reverb decay / size of the water */
 } DeepblueParams;
 
 typedef struct DeepblueDsp DeepblueDsp;      /* opaque state */

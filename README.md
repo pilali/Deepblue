@@ -17,9 +17,14 @@ decorrelated into a wide image (the eventual "loss of localisation" feature).
 ## Signal chain
 
 ```
-in → Absorption (4-pole LP) → Wobble (modulated delay) → Dispersion (allpass chain) → [StereoField] → Dry/Wet → ×Level → out
-                                                                                                          ⊕ Minnaert bubble stream
+in → Absorption → Wobble → Dispersion → [StereoField] → ⊕ bubbles → ⊕ reverb → Dry/Wet → ×Level → out
 ```
+
+Everything after the per-channel chain — the StereoField, the Minnaert bubble
+stream and the dark diffuse reverb — is part of the **wet** signal, so the
+single **Mix** knob balances the dry guitar against the whole underwater
+treatment. The reverb is fed by the wet signal (bubbles included), so the
+bubbles reverberate inside the same body of water.
 
 On the stereo path a **StereoField** stage recreates the underwater *loss of
 directional hearing*: because sound travels ~4.4× faster in water (so interaural
@@ -52,6 +57,8 @@ all three at once, with per-control trims on top.
 | Bubbles     | 0 – 1      | Minnaert bubble-stream density / presence         |
 | Bubble Size | 0 – 1      | Bubble register: small/fizzy → large/gloopy       |
 | Immersion   | 0 – 1      | Loss of localisation: collapse + diffuse (stereo) |
+| Reverb      | 0 – 1      | Dark diffuse reverb amount (surface/bottom field) |
+| Reverb Size | 0 – 1      | Reverb decay / size of the body of water          |
 
 ## Building
 
@@ -94,9 +101,11 @@ Both default to **6** (MOD Dwarf), **12** (native), **16** (Pi 5 / desktop JUCE)
 
 ## Status
 
-Steps 1–4 implemented: Absorption, Wobble, Depth macro, Dry/Wet, Dispersion, the
-Minnaert bubble layer, and the StereoField loss-of-localisation stage. Planned
-next (step 5): dark diffuse reverb, custom UI + MOD modgui + presets.
+Steps 1–5 (DSP) implemented: Absorption, Wobble, Depth macro, Dry/Wet,
+Dispersion, the Minnaert bubble layer, the StereoField loss-of-localisation
+stage, and the dark diffuse reverb (a 4-line FDN). Remaining for step 5:
+presets, MOD modgui and a custom JUCE UI. Step 6 finalises the JUCE VST3/AU/
+Windows builds.
 
 ## License
 

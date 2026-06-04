@@ -34,7 +34,9 @@ enum Port : uint32_t {
     P_BUBBLES      = 11,   // Minnaert bubble-stream presence  [0 – 1]
     P_BUBBLE_SIZE  = 12,   // bubble register (small → big)    [0 – 1]
     P_IMMERSION    = 13,   // loss of localisation (stereo)    [0 – 1]
-    P_COUNT        = 14
+    P_REVERB       = 14,   // dark diffuse reverb amount       [0 – 1]
+    P_REVERB_SIZE  = 15,   // reverb decay / size              [0 – 1]
+    P_COUNT        = 16
 };
 
 // Control input ports stored in the ctl[] array: indices 2..8.
@@ -55,6 +57,8 @@ struct DeepblueLV2 {
     const float* p_bubbles     = nullptr;
     const float* p_bubble_size = nullptr;
     const float* p_immersion   = nullptr;
+    const float* p_reverb      = nullptr;
+    const float* p_reverb_size = nullptr;
 };
 
 static inline float opt(const float* ptr, float dflt) noexcept {
@@ -96,6 +100,10 @@ static void connect_port(LV2_Handle handle, uint32_t port, void* data)
         p->p_bubble_size = static_cast<const float*>(data);
     else if (port == P_IMMERSION)
         p->p_immersion = static_cast<const float*>(data);
+    else if (port == P_REVERB)
+        p->p_reverb = static_cast<const float*>(data);
+    else if (port == P_REVERB_SIZE)
+        p->p_reverb_size = static_cast<const float*>(data);
     else if (port >= 2 && port < P_AUDIO_IN_R)
         p->ctl[port - 2] = static_cast<const float*>(data);
 }
@@ -121,6 +129,8 @@ static void run(LV2_Handle handle, uint32_t n_samples)
         opt(p->p_bubbles,     0.0f),
         opt(p->p_bubble_size, 0.4f),
         opt(p->p_immersion,   0.4f),
+        opt(p->p_reverb,      0.25f),
+        opt(p->p_reverb_size, 0.5f),
     };
 
     if (p->audio_out_r) {
