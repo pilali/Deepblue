@@ -5,13 +5,13 @@
 //   - holds port pointers + a DeepblueDsp* instance,
 //   - maps the connected control ports into a DeepblueParams on each run().
 //
-// The plugin is mono-in → stereo-out: one mandatory input, two mandatory
-// outputs. The stereo path always runs (the Immersion field and the stereo
-// spread of the bubbles/reverb need two channels to exist); the core
-// decorrelates the single mono input into a wide stereo image. There are NO
-// optional ports — every port is mandatory and contiguous, the layout some
-// hosts (mod-host) are most robust with. The mono-out branch below is only a
-// safety net for a host that somehow ignores the right output.
+// The plugin is true stereo: two mandatory inputs, two mandatory outputs, and
+// nothing optional. This is the most standard, host-robust layout, and it
+// matches what a saved MOD pedalboard expects (all four audio ports present, so
+// no connection can dangle when the layout changes). A mono source feeding both
+// inputs works identically — the core decorrelates the channels into a wide
+// underwater image, and the Immersion field / stereo bubbles + reverb run on
+// the stereo path. The mono branch below is only a safety net.
 #include <lv2/core/lv2.h>
 #include <array>
 #include <cstdint>
@@ -22,29 +22,33 @@
 static constexpr char DEEPBLUE_URI[] = "https://github.com/pilali/deepblue";
 
 // ── Port indices ───────────────────────────────────────────────────────────
-// Every port is mandatory and contiguous — no optional ports at all, the layout
-// hosts (mod-host) are most robust with. Audio first, then the 12 controls.
-//   0  audio_in      (mandatory)
-//   1  audio_out     (mandatory)
-//   2  audio_out_r   (mandatory — mono-in → stereo-out)
-//   3..14 controls   (contiguous)
+// True stereo, every port mandatory and contiguous — no optional ports at all,
+// the layout hosts (mod-host) are most robust with, and the one a saved MOD
+// pedalboard expects (all four audio ports always present, so no connection can
+// dangle when the build changes). Audio first, then the 12 controls.
+//   0  audio_in      (mandatory in,  left)
+//   1  audio_in_r    (mandatory in,  right)
+//   2  audio_out     (mandatory out, left)
+//   3  audio_out_r   (mandatory out, right)
+//   4..15 controls   (contiguous)
 enum Port : uint32_t {
     P_AUDIO_IN     =  0,
-    P_AUDIO_OUT    =  1,
-    P_AUDIO_OUT_R  =  2,   // mandatory right output — always stereo out
-    P_DEPTH        =  3,   // macro: surface → deep            [0 – 1]
-    P_TONE         =  4,   // bright/dark trim                 [0 – 1]
-    P_WOBBLE       =  5,   // pitch-wavering depth             [0 – 1]
-    P_WOBBLE_RATE  =  6,   // wavering speed Hz                [0.05 – 2]
-    P_DISPERSION   =  7,   // allpass smear                    [0 – 1]
-    P_MIX          =  8,   // dry/wet                          [0 – 1]
-    P_LEVEL        =  9,   // output gain                      [0 – 2]
-    P_BUBBLES      = 10,   // Minnaert bubble-stream presence  [0 – 1]
-    P_BUBBLE_SIZE  = 11,   // bubble register (small → big)    [0 – 1]
-    P_IMMERSION    = 12,   // loss of localisation (stereo)    [0 – 1]
-    P_REVERB       = 13,   // dark diffuse reverb amount       [0 – 1]
-    P_REVERB_SIZE  = 14,   // reverb decay / size              [0 – 1]
-    P_COUNT        = 15
+    P_AUDIO_IN_R   =  1,
+    P_AUDIO_OUT    =  2,
+    P_AUDIO_OUT_R  =  3,
+    P_DEPTH        =  4,   // macro: surface → deep            [0 – 1]
+    P_TONE         =  5,   // bright/dark trim                 [0 – 1]
+    P_WOBBLE       =  6,   // pitch-wavering depth             [0 – 1]
+    P_WOBBLE_RATE  =  7,   // wavering speed Hz                [0.05 – 2]
+    P_DISPERSION   =  8,   // allpass smear                    [0 – 1]
+    P_MIX          =  9,   // dry/wet                          [0 – 1]
+    P_LEVEL        = 10,   // output gain                      [0 – 2]
+    P_BUBBLES      = 11,   // Minnaert bubble-stream presence  [0 – 1]
+    P_BUBBLE_SIZE  = 12,   // bubble register (small → big)    [0 – 1]
+    P_IMMERSION    = 13,   // loss of localisation (stereo)    [0 – 1]
+    P_REVERB       = 14,   // dark diffuse reverb amount       [0 – 1]
+    P_REVERB_SIZE  = 15,   // reverb decay / size              [0 – 1]
+    P_COUNT        = 16
 };
 
 // Control input ports stored in the ctl[] array: indices 3..14 (contiguous).
@@ -54,9 +58,10 @@ static constexpr uint32_t N_CTL = P_REVERB_SIZE - P_DEPTH + 1;
 struct DeepblueLV2 {
     DeepblueDsp* dsp = nullptr;
 
-    const float* audio_in    = nullptr;
-    float*       audio_out   = nullptr;   // left / mono output
-    float*       audio_out_r = nullptr;   // right output (mandatory)
+    const float* audio_in    = nullptr;   // left input
+    const float* audio_in_r  = nullptr;   // right input
+    float*       audio_out   = nullptr;   // left output
+    float*       audio_out_r = nullptr;   // right output
     std::array<const float*, N_CTL> ctl = {};
 };
 
@@ -83,6 +88,8 @@ static void connect_port(LV2_Handle handle, uint32_t port, void* data)
     DeepblueLV2* p = static_cast<DeepblueLV2*>(handle);
     if (port == P_AUDIO_IN)
         p->audio_in = static_cast<const float*>(data);
+    else if (port == P_AUDIO_IN_R)
+        p->audio_in_r = static_cast<const float*>(data);
     else if (port == P_AUDIO_OUT)
         p->audio_out = static_cast<float*>(data);
     else if (port == P_AUDIO_OUT_R)
@@ -117,9 +124,12 @@ static void run(LV2_Handle handle, uint32_t n_samples)
     };
 
     if (p->audio_out_r) {
-        // Stereo path: the single mono input feeds both channels and the core
-        // decorrelates them into a wide stereo image.
-        deepblue_dsp_process_stereo(p->dsp, &params, p->audio_in, p->audio_in,
+        // Stereo path. A genuine stereo source uses both inputs; a mono source
+        // patched to both inputs (or only the left) still widens, because the
+        // core decorrelates the channels. Fall back to the left input if a host
+        // somehow left the right input unconnected.
+        const float* inR = p->audio_in_r ? p->audio_in_r : p->audio_in;
+        deepblue_dsp_process_stereo(p->dsp, &params, p->audio_in, inR,
                                     p->audio_out, p->audio_out_r, n_samples);
     } else {
         // Safety net only — a conformant host always connects the mandatory
