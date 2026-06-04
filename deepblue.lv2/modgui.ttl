@@ -29,14 +29,14 @@
         ] , [
             lv2:index 8 ;  lv2:symbol "level" ;        lv2:name "Level" ;
         ] , [
-            lv2:index 11 ; lv2:symbol "bubbles" ;      lv2:name "Bubbles" ;
+            lv2:index 9 ;  lv2:symbol "bubbles" ;      lv2:name "Bubbles" ;
         ] , [
-            lv2:index 12 ; lv2:symbol "bubble_size" ;  lv2:name "Bubble Size" ;
+            lv2:index 10 ; lv2:symbol "bubble_size" ;  lv2:name "Bubble Size" ;
         ] , [
-            lv2:index 13 ; lv2:symbol "immersion" ;    lv2:name "Immersion" ;
+            lv2:index 11 ; lv2:symbol "immersion" ;    lv2:name "Immersion" ;
         ] , [
-            lv2:index 14 ; lv2:symbol "reverb" ;       lv2:name "Reverb" ;
+            lv2:index 12 ; lv2:symbol "reverb" ;       lv2:name "Reverb" ;
         ] , [
-            lv2:index 15 ; lv2:symbol "reverb_size" ;  lv2:name "Reverb Size" ;
+            lv2:index 13 ; lv2:symbol "reverb_size" ;  lv2:name "Reverb Size" ;
         ] ;
     ] .

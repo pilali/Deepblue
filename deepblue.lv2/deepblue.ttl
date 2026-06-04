@@ -96,30 +96,10 @@
         lv2:default 1.0
     ] ,
 
-    # ── Optional right-side ports ────────────────────────────────────────
-    # Connected by the host ⇒ stereo. Left output unconnected ⇒ the plugin
-    # runs as a plain mono effect. Right input unconnected (but right output
-    # connected) ⇒ mono-in, decorrelated-stereo-out.
-    [
-        a lv2:AudioPort, lv2:InputPort ;
-        lv2:index 9 ;
-        lv2:symbol "audio_in_r" ;
-        lv2:name   "Audio In R" ;
-        lv2:portProperty lv2:connectionOptional
-    ] ,
-    [
-        a lv2:AudioPort, lv2:OutputPort ;
-        lv2:index 10 ;
-        lv2:symbol "audio_out_r" ;
-        lv2:name   "Audio Out R" ;
-        lv2:portProperty lv2:connectionOptional
-    ] ,
-
     # ── Bubble layer (step 4) ────────────────────────────────────────────
-    # Appended past the optional audio ports so the indices above stay stable.
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   11 ;
+        lv2:index   9 ;
         lv2:symbol  "bubbles" ;
         lv2:name    "Bubbles" ;
         lv2:minimum 0.0 ;
@@ -128,7 +108,7 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   12 ;
+        lv2:index   10 ;
         lv2:symbol  "bubble_size" ;
         lv2:name    "Bubble Size" ;
         lv2:minimum 0.0 ;
@@ -140,7 +120,7 @@
     # Cross-channel: only audible on the stereo path.
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   13 ;
+        lv2:index   11 ;
         lv2:symbol  "immersion" ;
         lv2:name    "Immersion" ;
         lv2:minimum 0.0 ;
@@ -151,7 +131,7 @@
     # ── Dark diffuse reverb (step 5) ─────────────────────────────────────
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   14 ;
+        lv2:index   12 ;
         lv2:symbol  "reverb" ;
         lv2:name    "Reverb" ;
         lv2:minimum 0.0 ;
@@ -160,10 +140,29 @@
     ] ,
     [
         a lv2:ControlPort, lv2:InputPort ;
-        lv2:index   15 ;
+        lv2:index   13 ;
         lv2:symbol  "reverb_size" ;
         lv2:name    "Reverb Size" ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
         lv2:default 0.5
+    ] ,
+
+    # ── Optional right-side ports (last, after every control) ────────────
+    # Connected by the host ⇒ stereo. Right output unconnected ⇒ the plugin
+    # runs as a plain mono effect. Right input unconnected (but right output
+    # connected) ⇒ mono-in, decorrelated-stereo-out.
+    [
+        a lv2:AudioPort, lv2:InputPort ;
+        lv2:index 14 ;
+        lv2:symbol "audio_in_r" ;
+        lv2:name   "Audio In R" ;
+        lv2:portProperty lv2:connectionOptional
+    ] ,
+    [
+        a lv2:AudioPort, lv2:OutputPort ;
+        lv2:index 15 ;
+        lv2:symbol "audio_out_r" ;
+        lv2:name   "Audio Out R" ;
+        lv2:portProperty lv2:connectionOptional
     ] .
