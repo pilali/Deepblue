@@ -31,3 +31,5 @@
     lv2:appliesTo <https://github.com/pilali/deepblue> ;
     a pset:Preset ;
     rdfs:seeAlso <SubmergedCathedral.ttl> .
+
+<https://github.com/pilali/deepblue> rdfs:seeAlso <modgui.ttl> .

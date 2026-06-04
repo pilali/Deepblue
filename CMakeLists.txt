@@ -52,7 +52,9 @@ message(STATUS "Bubble voices:     ${DEEPBLUE_BUBBLE_VOICES}")
 file(GLOB DEEPBLUE_TTLS "${CMAKE_SOURCE_DIR}/deepblue.lv2/*.ttl")
 add_custom_command(TARGET deepblue POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${DEEPBLUE_TTLS} "${BUNDLE_DIR}/"
-    COMMENT "Copying TTL files (incl. presets) to bundle"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/deepblue.lv2/modgui" "${BUNDLE_DIR}/modgui"
+    COMMENT "Copying TTL files (incl. presets) and modgui to bundle"
 )
 
 install(DIRECTORY "${BUNDLE_DIR}"

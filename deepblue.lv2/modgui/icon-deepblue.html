@@ -1,0 +1,108 @@
+<div class="mod-pedal deepblue-panel{{{cns}}}">
+
+    <div mod-role="drag-handle" class="mod-drag-handle"></div>
+
+    <!-- Brand / master bypass: click DEEPBLUE to enable/disable -->
+    <div class="deepblue-logo" mod-role="bypass" title="Enable / Disable">
+        <span class="deepblue-logo-text">DEEPBLUE</span>
+        <span class="deepblue-tagline">underwater effect</span>
+        <div class="deepblue-logo-light" mod-role="bypass-light"></div>
+    </div>
+
+    <!-- Rising bubbles motif (decorative) -->
+    <div class="deepblue-bubbles">
+        <span style="left:4px;  bottom:8px;  width:5px;  height:5px"></span>
+        <span style="left:18px; bottom:22px; width:3px;  height:3px"></span>
+        <span style="left:30px; bottom:4px;  width:7px;  height:7px"></span>
+        <span style="left:46px; bottom:18px; width:4px;  height:4px"></span>
+        <span style="left:60px; bottom:30px; width:3px;  height:3px"></span>
+        <span style="left:72px; bottom:10px; width:5px;  height:5px"></span>
+    </div>
+
+    <!-- ── Central DEPTH macro ─────────────────────────────────────────── -->
+    <div class="deepblue-depth">
+        <div class="db-dial db-dial-big"
+             mod-role="input-control-port"
+             mod-port-symbol="depth"
+             mod-widget-rotation="270">
+            <div class="db-pointer"></div>
+        </div>
+        <span class="db-label">DEPTH</span>
+        <span class="db-value" data-port="depth"></span>
+    </div>
+
+    <!-- ── Left column: WATER / MOTION ─────────────────────────────────── -->
+    <div class="deepblue-col deepblue-col-left">
+        <div class="db-section">WATER · MOTION</div>
+        <div class="db-knob" title="Tone">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="tone" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">TONE</span><span class="db-value" data-port="tone"></span>
+        </div>
+        <div class="db-knob" title="Wobble">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">WOBBLE</span><span class="db-value" data-port="wobble"></span>
+        </div>
+        <div class="db-knob" title="Dispersion">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="dispersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">DISPERSION</span><span class="db-value" data-port="dispersion"></span>
+        </div>
+    </div>
+
+    <!-- ── Right column: SPACE / OUTPUT ────────────────────────────────── -->
+    <div class="deepblue-col deepblue-col-right">
+        <div class="db-section">SPACE · OUTPUT</div>
+        <div class="db-knob" title="Immersion">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="immersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">IMMERSION</span><span class="db-value" data-port="immersion"></span>
+        </div>
+        <div class="db-knob" title="Mix">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="mix" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">MIX</span><span class="db-value" data-port="mix"></span>
+        </div>
+        <div class="db-knob" title="Level">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="level" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">LEVEL</span><span class="db-value" data-port="level"></span>
+        </div>
+    </div>
+
+    <!-- ── Bottom row ──────────────────────────────────────────────────── -->
+    <div class="deepblue-row">
+        <div class="db-knob" title="Wobble Rate">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble_rate" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">RATE</span><span class="db-value" data-port="wobble_rate"></span>
+        </div>
+        <div class="db-knob" title="Reverb">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">REVERB</span><span class="db-value" data-port="reverb"></span>
+        </div>
+        <div class="db-knob" title="Reverb Size">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">SIZE</span><span class="db-value" data-port="reverb_size"></span>
+        </div>
+        <div class="db-knob" title="Bubbles">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubbles" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">BUBBLES</span><span class="db-value" data-port="bubbles"></span>
+        </div>
+        <div class="db-knob" title="Bubble Size">
+            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubble_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <span class="db-label">BUB SIZE</span><span class="db-value" data-port="bubble_size"></span>
+        </div>
+    </div>
+
+</div>
+
+<!-- Audio I/O jacks — MOD-UI core positions them outside the box. -->
+<div class="mod-pedal-input">
+    {{#effect.ports.audio.input}}
+    <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-audio-port" mod-port-symbol="{{symbol}}">
+        <div class="mod-pedal-input-image"></div>
+    </div>
+    {{/effect.ports.audio.input}}
+</div>
+<div class="mod-pedal-output">
+    {{#effect.ports.audio.output}}
+    <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-audio-port" mod-port-symbol="{{symbol}}">
+        <div class="mod-pedal-output-image"></div>
+    </div>
+    {{/effect.ports.audio.output}}
+</div>

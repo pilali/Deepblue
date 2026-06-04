@@ -1,0 +1,196 @@
+/* ============================================================
+   DEEPBLUE — custom modgui stylesheet
+   Abyssal panel: deep navy→black gradient, caustic light,
+   a large central DEPTH macro and glassy cyan-lit knobs.
+   ============================================================ */
+
+@import url(/fonts/nexa/stylesheet.css);
+@import url(/fonts/questrial/stylesheet.css);
+
+/* ── Panel ──────────────────────────────────────────────── */
+.deepblue-panel{{{cns}}} {
+    background:
+        radial-gradient(120% 70% at 50% -10%, rgba(72,214,230,0.16) 0%, rgba(72,214,230,0) 55%),
+        linear-gradient(180deg, #0b3a5c 0%, #052236 45%, #020a12 100%);
+    border-radius: 14px;
+    box-shadow:
+        inset 0 1px 0 rgba(120,220,240,0.10),
+        inset 0 -3px 12px rgba(0,0,0,0.55),
+        0 4px 20px rgba(0,0,0,0.5);
+    color: #bfe8f0;
+    font-family: "Nexa", "Questrial", sans-serif;
+    height: 430px;
+    position: absolute;
+    width: 700px;
+    overflow: hidden;
+}
+
+/* Drifting caustic light bands near the surface. */
+.deepblue-panel{{{cns}}}::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -10%;
+    width: 120%; height: 130px;
+    background:
+        repeating-linear-gradient(115deg,
+            rgba(72,214,230,0.06) 0px, rgba(72,214,230,0.06) 2px,
+            rgba(72,214,230,0) 2px, rgba(72,214,230,0) 26px);
+    pointer-events: none;
+    animation: deepblue-caustic 11s linear infinite;
+}
+@keyframes deepblue-caustic {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-26px); }
+}
+
+/* ── Brand / master bypass ──────────────────────────────── */
+/* All interactive zones sit at z-index >= 30 so they land above
+   .mod-pedal .mod-drag-handle (z-index:20 in MOD-UI core). */
+.deepblue-panel{{{cns}}} .deepblue-logo {
+    cursor: pointer;
+    left: 26px;
+    position: absolute;
+    top: 16px;
+    user-select: none;
+    z-index: 30;
+}
+.deepblue-panel{{{cns}}} .deepblue-logo-text {
+    color: #48d6e6;
+    display: block;
+    font-family: "Nexa", sans-serif;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(72,214,230,0.45);
+    transition: color 120ms ease, text-shadow 120ms ease;
+}
+.deepblue-panel{{{cns}}} .deepblue-tagline {
+    color: rgba(191,232,240,0.5);
+    display: block;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+.deepblue-panel{{{cns}}} .deepblue-logo-light { height: 0; width: 0; }
+/* Dim the logo when bypassed (MOD-UI toggles `on` on the light element). */
+.deepblue-panel{{{cns}}} .deepblue-logo:has(.deepblue-logo-light:not(.on)) .deepblue-logo-text {
+    color: #3a606e;
+    text-shadow: none;
+}
+
+/* ── Rising bubbles motif ───────────────────────────────── */
+.deepblue-panel{{{cns}}} .deepblue-bubbles {
+    position: absolute;
+    top: 14px; right: 20px;
+    width: 90px; height: 44px;
+    z-index: 5;
+}
+.deepblue-panel{{{cns}}} .deepblue-bubbles span {
+    position: absolute;
+    border: 1px solid rgba(72,214,230,0.45);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(72,214,230,0.25);
+    animation: deepblue-rise 6s ease-in infinite;
+}
+@keyframes deepblue-rise {
+    0%   { transform: translateY(8px);  opacity: 0; }
+    20%  { opacity: 0.7; }
+    100% { transform: translateY(-22px); opacity: 0; }
+}
+
+/* ── Section captions ───────────────────────────────────── */
+.deepblue-panel{{{cns}}} .db-section {
+    color: rgba(191,232,240,0.32);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-align: center;
+}
+
+/* ── Knobs ──────────────────────────────────────────────── */
+.deepblue-panel{{{cns}}} .db-knob,
+.deepblue-panel{{{cns}}} .deepblue-depth {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+}
+.deepblue-panel{{{cns}}} .db-dial {
+    position: relative;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background:
+        radial-gradient(60% 60% at 38% 32%, #15546f 0%, #0a2f43 55%, #04111d 100%);
+    box-shadow:
+        inset 0 1px 1px rgba(150,230,245,0.18),
+        inset 0 -3px 6px rgba(0,0,0,0.6),
+        0 2px 5px rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+.deepblue-panel{{{cns}}} .db-dial-big { width: 120px; height: 120px; }
+
+/* Pointer notch (rotates with the dial). */
+.deepblue-panel{{{cns}}} .db-pointer {
+    position: absolute;
+    left: 50%; top: 8%;
+    width: 2.5px; height: 30%;
+    margin-left: -1.25px;
+    border-radius: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 7px rgba(72,214,230,0.9);
+}
+.deepblue-panel{{{cns}}} .db-dial-big .db-pointer { width: 3.5px; margin-left: -1.75px; }
+
+.deepblue-panel{{{cns}}} .db-label {
+    color: #bfe8f0;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-top: 7px;
+    text-align: center;
+}
+.deepblue-panel{{{cns}}} .deepblue-depth .db-label {
+    color: #48d6e6;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    margin-top: 10px;
+    text-shadow: 0 0 12px rgba(72,214,230,0.4);
+}
+.deepblue-panel{{{cns}}} .db-value {
+    color: rgba(191,232,240,0.6);
+    font-size: 8px;
+    margin-top: 2px;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.deepblue-panel{{{cns}}} .deepblue-depth {
+    position: absolute;
+    left: 290px; top: 74px;
+    width: 120px;
+}
+.deepblue-panel{{{cns}}} .deepblue-col {
+    position: absolute;
+    top: 64px;
+    width: 124px;
+    height: 296px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.deepblue-panel{{{cns}}} .deepblue-col-left  { left: 26px; }
+.deepblue-panel{{{cns}}} .deepblue-col-right { right: 26px; }
+
+.deepblue-panel{{{cns}}} .deepblue-row {
+    position: absolute;
+    left: 26px; right: 26px;
+    top: 366px;
+    display: flex;
+    justify-content: space-between;
+}
+.deepblue-panel{{{cns}}} .deepblue-row .db-dial { width: 46px; height: 46px; }
+
+/* Smaller pointer height already proportional via percentages. */
