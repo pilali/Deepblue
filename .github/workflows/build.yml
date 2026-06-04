@@ -63,6 +63,11 @@ jobs:
           - os: windows-latest
             name: windows-x86_64
     runs-on: ${{ matrix.os }}
+    # Use bash on every OS (git bash on Windows) so argument quoting is uniform —
+    # PowerShell mangled -DJUCE_TAG=8.0.8 into "8".
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -89,7 +94,7 @@ jobs:
           cmake -S juce -B juce/build
           -DCMAKE_BUILD_TYPE=Release
           -DCOPY_AFTER_BUILD=OFF
-          -DJUCE_TAG=${{ env.JUCE_TAG }}
+          -DJUCE_TAG="${{ env.JUCE_TAG }}"
 
       - name: Build
         run: cmake --build juce/build --config Release --parallel
