@@ -28,6 +28,7 @@ endif()
 # Dispersion allpass chain length. 16 on desktop (plenty of CPU) — matches the
 # Pi 5 build's richer dispersive tail.
 set(DEEPBLUE_DISP_STAGES "16" CACHE STRING "Dispersion allpass stages")
+set(DEEPBLUE_BUBBLE_VOICES "16" CACHE STRING "Bubble-stream voices")
 
 juce_add_plugin(Deepblue
     COMPANY_NAME "pilali"
@@ -49,7 +50,8 @@ target_sources(Deepblue PRIVATE
 target_include_directories(Deepblue PRIVATE ${DSP_DIR})
 
 target_compile_definitions(Deepblue PRIVATE
-    DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES})
+    DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES}
+    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES})
 
 target_compile_definitions(Deepblue PUBLIC
     JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0

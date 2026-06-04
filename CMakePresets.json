@@ -18,7 +18,8 @@
       "displayName": "Native (host compiler)",
       "description": "Development / testing on the build machine — no cross-compilation",
       "cacheVariables": {
-        "DEEPBLUE_DISP_STAGES": "12"
+        "DEEPBLUE_DISP_STAGES": "12",
+        "DEEPBLUE_BUBBLE_VOICES": "12"
       }
     },
 
@@ -30,7 +31,8 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{HOST_DIR}/usr/share/buildroot/toolchainfile.cmake",
         "CMAKE_CXX_FLAGS": "-mcpu=cortex-a35 -O3 -ffast-math",
-        "DEEPBLUE_DISP_STAGES": "6"
+        "DEEPBLUE_DISP_STAGES": "6",
+        "DEEPBLUE_BUBBLE_VOICES": "6"
       }
     },
 
@@ -41,7 +43,8 @@
       "description": "Cross or native compile for Pi 5 / MODEP. Long dispersion chain.",
       "cacheVariables": {
         "CMAKE_CXX_FLAGS": "-mcpu=cortex-a76 -march=armv8.2-a -O3 -ffast-math -funroll-loops",
-        "DEEPBLUE_DISP_STAGES": "16"
+        "DEEPBLUE_DISP_STAGES": "16",
+        "DEEPBLUE_BUBBLE_VOICES": "16"
       }
     },
 

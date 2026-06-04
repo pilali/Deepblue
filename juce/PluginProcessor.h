@@ -52,6 +52,9 @@ private:
     std::atomic<float>* pDispersion = nullptr;
     std::atomic<float>* pMix        = nullptr;
     std::atomic<float>* pLevel      = nullptr;
+    std::atomic<float>* pBubbles    = nullptr;
+    std::atomic<float>* pBubbleSize = nullptr;
+    std::atomic<float>* pImmersion  = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeepblueAudioProcessor)
 };

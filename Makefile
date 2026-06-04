@@ -14,7 +14,7 @@ ifeq ($(TARGET),rpi5)
     # Static libstdc++/libgcc: embed the C++ runtime so the .so doesn't depend
     # on the target system's libstdc++ version.
     override LDFLAGS  := -static-libstdc++ -static-libgcc
-    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=16
+    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=16 -DDEEPBLUE_BUBBLE_VOICES=16
 
 else ifeq ($(TARGET),moddwarf-new)
     # mod-plugin-builder injects CXX and CXXFLAGS via command-line args.
@@ -23,8 +23,8 @@ else ifeq ($(TARGET),moddwarf-new)
     CXXFLAGS ?= -std=c++17 -O3 -ffast-math \
                 -mcpu=cortex-a35 \
                 -fvisibility=hidden -Wall -Wextra -Wno-unused-parameter
-    # Short allpass chain to fit the Cortex-A35 CPU budget.
-    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=6
+    # Short allpass chain and bubble pool to fit the Cortex-A35 CPU budget.
+    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=6 -DDEEPBLUE_BUBBLE_VOICES=6
 
 else  # native
     CXX      ?= g++
@@ -39,7 +39,7 @@ LV2FLAGS ?= $(shell pkg-config --cflags lv2 2>/dev/null)
 BUNDLE  = deepblue.lv2
 BINARY  = $(BUNDLE)/deepblue.so
 SOURCES = src/plugin.cpp src/deepblue_dsp.cpp src/glibc_compat.cpp
-HEADERS = src/deepblue_dsp.h src/biquad.hpp src/delayline.hpp src/lfo.hpp src/dispersion.hpp
+HEADERS = src/deepblue_dsp.h src/biquad.hpp src/delayline.hpp src/lfo.hpp src/dispersion.hpp src/bubbles.hpp src/stereofield.hpp
 
 all: $(BINARY)
 

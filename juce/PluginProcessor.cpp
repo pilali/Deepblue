@@ -25,6 +25,9 @@ APVTS::ParameterLayout DeepblueAudioProcessor::createLayout()
     p.add(std::make_unique<AF>(pid("dispersion"),  "Dispersion",  Range(0.0f, 1.0f), 0.4f));
     p.add(std::make_unique<AF>(pid("mix"),         "Mix",         Range(0.0f, 1.0f), 0.6f));
     p.add(std::make_unique<AF>(pid("level"),       "Level",       Range(0.0f, 2.0f), 1.0f));
+    p.add(std::make_unique<AF>(pid("bubbles"),     "Bubbles",     Range(0.0f, 1.0f), 0.0f));
+    p.add(std::make_unique<AF>(pid("bubble_size"), "Bubble Size", Range(0.0f, 1.0f), 0.4f));
+    p.add(std::make_unique<AF>(pid("immersion"),   "Immersion",   Range(0.0f, 1.0f), 0.4f));
 
     return p;
 }
@@ -43,6 +46,9 @@ DeepblueAudioProcessor::DeepblueAudioProcessor()
     pDispersion = raw("dispersion");
     pMix        = raw("mix");
     pLevel      = raw("level");
+    pBubbles    = raw("bubbles");
+    pBubbleSize = raw("bubble_size");
+    pImmersion  = raw("immersion");
 }
 
 DeepblueAudioProcessor::~DeepblueAudioProcessor()
@@ -81,7 +87,8 @@ void DeepblueAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 
     const DeepblueParams p {
         pDepth->load(), pTone->load(), pWobble->load(), pWobbleRate->load(),
-        pDispersion->load(), pMix->load(), pLevel->load()
+        pDispersion->load(), pMix->load(), pLevel->load(),
+        pBubbles->load(), pBubbleSize->load(), pImmersion->load()
     };
 
     const int numIn  = getTotalNumInputChannels();

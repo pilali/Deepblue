@@ -19,6 +19,9 @@ typedef struct {
     float dispersion;   /* idx 6  [0 – 1]   all-pass frequency smear         */
     float mix;          /* idx 7  [0 – 1]   dry/wet                          */
     float level;        /* idx 8  [0 – 2]   output gain                      */
+    float bubbles;      /* idx 11 [0 – 1]   Minnaert bubble-stream presence  */
+    float bubble_size;  /* idx 12 [0 – 1]   bubble register (small → big)    */
+    float immersion;    /* idx 13 [0 – 1]   loss of localisation (stereo)    */
 } DeepblueParams;
 
 typedef struct DeepblueDsp DeepblueDsp;      /* opaque state */

@@ -13,6 +13,10 @@ pkg_check_modules(LV2 REQUIRED lv2)
 set(DEEPBLUE_DISP_STAGES "12" CACHE STRING
     "Dispersion allpass stages (6 for MOD Dwarf, 12 native, 16 for Pi 5)")
 
+# Polyphony of the Minnaert bubble stream. 6 fits the MOD Dwarf; 12/16 elsewhere.
+set(DEEPBLUE_BUBBLE_VOICES "12" CACHE STRING
+    "Bubble-stream voices (6 for MOD Dwarf, 12 native, 16 for Pi 5)")
+
 set(BUNDLE_DIR "${CMAKE_BINARY_DIR}/deepblue.lv2")
 
 add_library(deepblue MODULE
@@ -23,7 +27,8 @@ add_library(deepblue MODULE
 target_include_directories(deepblue PRIVATE ${LV2_INCLUDE_DIRS} src)
 
 target_compile_definitions(deepblue PRIVATE
-    DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES})
+    DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES}
+    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES})
 
 target_compile_options(deepblue PRIVATE
     -Wall -Wextra -Wno-unused-parameter
@@ -40,6 +45,7 @@ set_target_properties(deepblue PROPERTIES
 )
 
 message(STATUS "Dispersion stages: ${DEEPBLUE_DISP_STAGES}")
+message(STATUS "Bubble voices:     ${DEEPBLUE_BUBBLE_VOICES}")
 
 # Copy TTL files into the build bundle next to the freshly built .so
 add_custom_command(TARGET deepblue POST_BUILD

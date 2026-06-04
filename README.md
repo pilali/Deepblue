@@ -17,8 +17,24 @@ decorrelated into a wide image (the eventual "loss of localisation" feature).
 ## Signal chain
 
 ```
-in → Absorption (4-pole LP) → Wobble (modulated delay) → Dispersion (allpass chain) → Dry/Wet → ×Level → out
+in → Absorption (4-pole LP) → Wobble (modulated delay) → Dispersion (allpass chain) → [StereoField] → Dry/Wet → ×Level → out
+                                                                                                          ⊕ Minnaert bubble stream
 ```
+
+On the stereo path a **StereoField** stage recreates the underwater *loss of
+directional hearing*: because sound travels ~4.4× faster in water (so interaural
+time differences shrink below the ear's resolution) and the head barely shadows
+it, a submerged listener can't tell where a sound comes from. As **Immersion**
+rises it collapses the coherent (directional) Side component toward mono while
+substituting a decorrelated diffuse field — the sound becomes non-localisable
+yet stays wide and enveloping. (Mono path: no-op — there's no image to lose.)
+
+A generative **bubble layer** is summed on top: a Poisson stream of damped,
+upward-chirping sinusoids at the Minnaert resonance of a gas bubble in water
+(`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface). Depth raises the ambient
+pressure, so deeper water shifts every bubble's pitch up (`f₀ ∝ √P`) while the
+bed is rolled off to stay coherent with the absorption. Each bubble is panned at
+random for a naturally wide stream.
 
 The single **Depth** macro is the physical through-line — deeper water means
 more high-frequency loss, more pitch wavering and more dispersion — so it biases
@@ -33,6 +49,9 @@ all three at once, with per-control trims on top.
 | Dispersion  | 0 – 1      | Allpass frequency smear                           |
 | Mix         | 0 – 1      | Dry/wet                                           |
 | Level       | 0 – 2      | Output gain                                       |
+| Bubbles     | 0 – 1      | Minnaert bubble-stream density / presence         |
+| Bubble Size | 0 – 1      | Bubble register: small/fizzy → large/gloopy       |
+| Immersion   | 0 – 1      | Loss of localisation: collapse + diffuse (stereo) |
 
 ## Building
 
@@ -70,14 +89,14 @@ macOS builds are universal (arm64 + x86_64) by default. Pass
 ## Tuning knob: dispersion chain length
 
 `DEEPBLUE_DISP_STAGES` sets the number of first-order allpass sections (the most
-CPU-hungry part). Defaults: **6** (MOD Dwarf), **12** (native), **16** (Pi 5 /
-desktop JUCE).
+CPU-hungry part). `DEEPBLUE_BUBBLE_VOICES` sets the bubble-stream polyphony.
+Both default to **6** (MOD Dwarf), **12** (native), **16** (Pi 5 / desktop JUCE).
 
 ## Status
 
-Steps 1–2 implemented: Absorption, Wobble, Depth macro, Dry/Wet, Dispersion.
-Planned next: stereo "loss of localisation" field, Minnaert bubble layer, dark
-diffuse reverb, custom UI + MOD modgui + presets.
+Steps 1–4 implemented: Absorption, Wobble, Depth macro, Dry/Wet, Dispersion, the
+Minnaert bubble layer, and the StereoField loss-of-localisation stage. Planned
+next (step 5): dark diffuse reverb, custom UI + MOD modgui + presets.
 
 ## License
 
