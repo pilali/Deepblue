@@ -39,12 +39,15 @@ rises it collapses the coherent (directional) Side component toward mono while
 substituting a decorrelated diffuse field — the sound becomes non-localisable
 yet stays wide and enveloping. (Mono path: no-op — there's no image to lose.)
 
-A generative **bubble layer** is summed on top: a Poisson stream of damped,
-upward-chirping sinusoids at the Minnaert resonance of a gas bubble in water
-(`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface). Depth raises the ambient
-pressure, so deeper water shifts every bubble's pitch up (`f₀ ∝ √P`) while the
-bed is rolled off to stay coherent with the absorption. Each bubble is panned at
-random for a naturally wide stream.
+A generative **bubble layer** rides the wet signal — not as an added sound but
+as a stream of *filters*. Each Poisson-emitted bubble opens a resonant band-pass
+on the processed signal at the Minnaert resonance of a gas bubble in water
+(`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface), chirping upward as it
+decays — the watery "bloop" — so the water bubbles around whatever you play
+(silence in, silence out). Bubble Size spans 0.4 mm fizz (~8 kHz) down to a very
+big 40 mm gloop (~80 Hz). Depth raises the ambient pressure, so deeper water
+shifts every bubble up (`f₀ ∝ √P`) while the bed is rolled off to stay coherent
+with the absorption. Each bubble is panned at random for a naturally wide stream.
 
 The single **Depth** macro is the physical through-line — deeper water means
 more high-frequency loss, more pitch wavering and more dispersion — so it biases
@@ -60,7 +63,7 @@ all three at once, with per-control trims on top.
 | Mix         | 0 – 1      | Dry/wet                                           |
 | Level       | 0 – 2      | Output gain                                       |
 | Bubbles     | 0 – 1      | Minnaert bubble-stream density / presence         |
-| Bubble Size | 0 – 1      | Bubble register: small/fizzy → large/gloopy       |
+| Bubble Size | 0 – 1      | Register: fizzy ~8 kHz → very big gloop ~80 Hz    |
 | Immersion   | 0 – 1      | Loss of localisation: collapse + diffuse (stereo) |
 | Reverb      | 0 – 1      | Dark diffuse reverb amount (surface/bottom field) |
 | Reverb Size | 0 – 1      | Reverb decay / size of the body of water          |

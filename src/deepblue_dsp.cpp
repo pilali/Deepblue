@@ -19,6 +19,8 @@
 // stronger high-frequency absorption, more pitch wavering and more dispersion,
 // so one knob biases all three at once (with per-control trims on top). It also
 // raises the ambient pressure, so the bubble stream's Minnaert pings shift up.
+// Bubbles are not an added sound: each one is a resonant band-pass sweeping the
+// wet signal at its Minnaert frequency, so the water bloops around the playing.
 
 #include "deepblue_dsp.h"
 
@@ -160,8 +162,9 @@ static inline float wobbleBase(double sr) {
     return WOBBLE_BASE_MS * (float)sr / 1000.0f;
 }
 
-// The bubble stream is one shared generator (stereo pings); the reverb is one
-// shared stereo FDN. Both feed the wet signal before the dry/wet mix.
+// The bubble stream is one shared filter-bank: each bubble is a resonant
+// band-pass applied to the wet signal (not an added sound), panned in stereo.
+// The reverb is one shared stereo FDN. Both feed the wet before the dry/wet mix.
 static void processMono(Channel& c, BubbleStream& bub, Reverb& rev,
                         const Macro& m, double sr,
                         const float* in, float* out, uint32_t n)
@@ -178,8 +181,8 @@ static void processMono(Channel& c, BubbleStream& bub, Reverb& rev,
         float w = channelWet(c, m, baseS, excS, x);
 
         float bl, br;
-        bub.tick(bl, br);
-        w += (bl + br) * 0.5f * m.bubbleAmt;        // bubbles folded to mono
+        bub.tick(w, bl, br);                        // bubbles filter the wet
+        w += (bl + br) * 0.5f * m.bubbleAmt;        // resonances folded to mono
 
         if (doRev) {
             float rL, rR;
@@ -215,7 +218,7 @@ static void processStereo(Channel& L, Channel& R, StereoField& field,
         field.process(m.fieldAmt, wL, wR);   // loss of localisation, on the wet
 
         float bl, br;
-        bub.tick(bl, br);
+        bub.tick(0.5f * (wL + wR), bl, br);  // bubbles filter the mid of the wet
         wL += bl * m.bubbleAmt;
         wR += br * m.bubbleAmt;
 
