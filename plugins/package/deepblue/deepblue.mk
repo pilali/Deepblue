@@ -4,7 +4,7 @@
 # To update: set DEEPBLUE_VERSION to the desired commit hash, then rebuild.
 ################################################################################
 
-DEEPBLUE_VERSION = HEAD
+DEEPBLUE_VERSION = 98239231a335ca64d3a93d8c59380aa2fb3b9113
 DEEPBLUE_SITE    = $(call github,pilali,deepblue,$(DEEPBLUE_VERSION))
 DEEPBLUE_BUNDLES = deepblue.lv2
 
