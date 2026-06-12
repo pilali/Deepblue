@@ -83,11 +83,19 @@ jobs:
             libglu1-mesa-dev mesa-common-dev
 
       # Cache the FetchContent JUCE clone so later runs skip the download/build.
+      # The runner image version is part of the key because the FetchContent
+      # subbuild bakes the CMake generator (e.g. the VS version) into its cache:
+      # restoring a cache made by an older image fails with "generator does not
+      # match the one used previously".
+      - name: Compute cache key suffix
+        id: img
+        run: echo "version=${ImageVersion:-local}" >> "$GITHUB_OUTPUT"
+
       - name: Cache JUCE
         uses: actions/cache@v4
         with:
           path: juce/build/_deps
-          key: juce-${{ runner.os }}-${{ env.JUCE_TAG }}
+          key: juce-${{ runner.os }}-${{ env.JUCE_TAG }}-img${{ steps.img.outputs.version }}
 
       - name: Configure
         run: >
