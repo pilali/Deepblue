@@ -22,7 +22,7 @@ still widens, because the core decorrelates the channels into a wide image.
 ## Signal chain
 
 ```
-in → Absorption → Wobble → Dispersion → [StereoField] → ⊕ bubbles → ⊕ reverb → Dry/Wet → ×Level → out
+in → Absorption → Wobble → Dispersion → [StereoField] → ⊕ bubbles → ⊕ reverb → Dry/Wet → ×Output → out
 ```
 
 Everything after the per-channel chain — the StereoField, the Minnaert bubble
@@ -40,14 +40,15 @@ substituting a decorrelated diffuse field — the sound becomes non-localisable
 yet stays wide and enveloping. (Mono path: no-op — there's no image to lose.)
 
 A generative **bubble layer** rides the wet signal — not as an added sound but
-as a stream of *filters*. Each Poisson-emitted bubble opens a resonant band-pass
-on the processed signal at the Minnaert resonance of a gas bubble in water
-(`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface), chirping upward as it
-decays — the watery "bloop" — so the water bubbles around whatever you play
-(silence in, silence out). Bubble Size spans 0.4 mm fizz (~8 kHz) down to a very
-big 40 mm gloop (~80 Hz). Depth raises the ambient pressure, so deeper water
-shifts every bubble up (`f₀ ∝ √P`) while the bed is rolled off to stay coherent
-with the absorption. Each bubble is panned at random for a naturally wide stream.
+as a stream of *filters*. Each Poisson-emitted bubble is a resonant band-pass
+ringing off the full-bandwidth input at the Minnaert resonance of a gas bubble
+in water (`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface), with the bubble's
+own physical damping as the filter Q, chirping upward as it decays — the watery
+"bloop" — so the water bubbles around whatever you play (silence in, silence
+out). Bubble Size spans 0.4 mm fizz (~8 kHz) down to a very big 40 mm gloop
+(~80 Hz). Depth raises the ambient pressure, so deeper water shifts every bubble
+up (`f₀ ∝ √P`) while the bed is rolled off to stay coherent with the absorption.
+Each bubble is panned at random for a naturally wide stream.
 
 The single **Depth** macro is the physical through-line — deeper water means
 more high-frequency loss, more pitch wavering and more dispersion — so it biases
@@ -60,8 +61,8 @@ all three at once, with per-control trims on top.
 | Wobble      | 0 – 1      | Pitch-wavering depth                              |
 | Wobble Rate | 0.05 – 2 Hz| Wavering speed                                    |
 | Dispersion  | 0 – 1      | Allpass frequency smear                           |
-| Mix         | 0 – 1      | Dry/wet                                           |
-| Level       | 0 – 2      | Output gain                                       |
+| Mix         | 0 – 1      | Dry/wet balance                                   |
+| Output      | 0 – 2      | Global output gain, applied after the mix         |
 | Bubbles     | 0 – 1      | Minnaert bubble-stream density / presence         |
 | Bubble Size | 0 – 1      | Register: fizzy ~8 kHz → very big gloop ~80 Hz    |
 | Immersion   | 0 – 1      | Loss of localisation: collapse + diffuse (stereo) |

@@ -127,7 +127,7 @@ DeepblueEditor::DeepblueEditor(DeepblueAudioProcessor& p)
     add("dispersion",  "DISPERSION");  // 2
     // Right column: 3,4,5
     add("mix",         "MIX");         // 3
-    add("level",       "LEVEL");       // 4
+    add("level",       "OUTPUT");      // 4
     add("immersion",   "IMMERSION");   // 5
     // Bottom row: 6,7,8,9,10
     add("wobble_rate", "RATE");        // 6

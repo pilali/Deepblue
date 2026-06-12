@@ -24,7 +24,7 @@ APVTS::ParameterLayout DeepblueAudioProcessor::createLayout()
     p.add(std::make_unique<AF>(pid("wobble_rate"), "Wobble Rate", rateRange, 0.3f, FA{}.withLabel("Hz")));
     p.add(std::make_unique<AF>(pid("dispersion"),  "Dispersion",  Range(0.0f, 1.0f), 0.4f));
     p.add(std::make_unique<AF>(pid("mix"),         "Mix",         Range(0.0f, 1.0f), 0.6f));
-    p.add(std::make_unique<AF>(pid("level"),       "Level",       Range(0.0f, 2.0f), 1.0f));
+    p.add(std::make_unique<AF>(pid("level"),       "Output",      Range(0.0f, 2.0f), 1.0f));
     p.add(std::make_unique<AF>(pid("bubbles"),     "Bubbles",     Range(0.0f, 1.0f), 0.0f));
     p.add(std::make_unique<AF>(pid("bubble_size"), "Bubble Size", Range(0.0f, 1.0f), 0.4f));
     p.add(std::make_unique<AF>(pid("immersion"),   "Immersion",   Range(0.0f, 1.0f), 0.4f));
