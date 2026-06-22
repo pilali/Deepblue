@@ -29,6 +29,7 @@ endif()
 # Pi 5 build's richer dispersive tail.
 set(DEEPBLUE_DISP_STAGES "16" CACHE STRING "Dispersion allpass stages")
 set(DEEPBLUE_BUBBLE_VOICES "16" CACHE STRING "Bubble-stream voices")
+set(DEEPBLUE_REVERB_LINES "8" CACHE STRING "Reverb FDN delay lines")
 
 juce_add_plugin(Deepblue
     COMPANY_NAME "pilali"
@@ -51,7 +52,8 @@ target_include_directories(Deepblue PRIVATE ${DSP_DIR})
 
 target_compile_definitions(Deepblue PRIVATE
     DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES}
-    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES})
+    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES}
+    DEEPBLUE_REVERB_LINES=${DEEPBLUE_REVERB_LINES})
 
 target_compile_definitions(Deepblue PUBLIC
     JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0

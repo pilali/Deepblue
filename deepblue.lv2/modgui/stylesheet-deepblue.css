@@ -19,7 +19,7 @@
         0 4px 20px rgba(0,0,0,0.5);
     color: #bfe8f0;
     font-family: "Nexa", "Questrial", sans-serif;
-    height: 430px;
+    height: 444px;
     position: absolute;
     width: 700px;
     overflow: hidden;
@@ -117,9 +117,10 @@
     flex-direction: column;
     z-index: 30;
 }
-.deepblue-panel{{{cns}}} .db-dial {
+/* The glass body lives on the non-rotating wrap: MOD-UI rotates .db-dial
+   itself, which would spin the top-left light catch with the value. */
+.deepblue-panel{{{cns}}} .db-dial-wrap {
     position: relative;
-    width: 52px; height: 52px;
     border-radius: 50%;
     background:
         radial-gradient(60% 60% at 38% 32%, #15546f 0%, #0a2f43 55%, #04111d 100%);
@@ -128,19 +129,68 @@
         inset 0 -3px 6px rgba(0,0,0,0.6),
         0 2px 5px rgba(0,0,0,0.5);
     border: 1px solid rgba(0,0,0,0.5);
+}
+.deepblue-panel{{{cns}}} .db-dial {
+    position: relative;
+    width: 52px; height: 52px;
+    border-radius: 50%;
     cursor: pointer;
 }
 .deepblue-panel{{{cns}}} .db-dial-big { width: 120px; height: 120px; }
 
-/* Pointer notch (rotates with the dial). */
+/* Glowing cyan value arc — same 270° sweep as the JUCE editor (7:30 → 4:30).
+   The dial below rotates (MOD-UI drives it); this overlay does not, the
+   script fills the arc via stroke-dasharray on the pathLength=100 paths. */
+.deepblue-panel{{{cns}}} .db-arc {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+/* Stroke widths are viewBox units (viewBox is 100×100, so they scale with
+   the knob); no vector-effect here — non-scaling-stroke would make the
+   stroke-dasharray ignore pathLength and break the value fill. */
+.deepblue-panel{{{cns}}} .db-arc path {
+    fill: none;
+    stroke-linecap: round;
+}
+.deepblue-panel{{{cns}}} .db-arc-track {
+    stroke: rgba(27,143,160,0.35);
+    stroke-width: 5.5;
+}
+/* The fill (stroke-dasharray) lives on the markup attribute and is updated
+   by script-deepblue.js — a CSS declaration here would override it. */
+.deepblue-panel{{{cns}}} .db-arc-glow {
+    stroke: rgba(72,214,230,0.28);
+    stroke-width: 12;
+}
+.deepblue-panel{{{cns}}} .db-arc-value {
+    stroke: #48d6e6;
+    stroke-width: 5.5;
+    filter: drop-shadow(0 0 3px rgba(72,214,230,0.65));
+}
+/* The big DEPTH dial scales the viewBox ×2.3 — thin the strokes back down. */
+.deepblue-panel{{{cns}}} .deepblue-depth .db-arc-track,
+.deepblue-panel{{{cns}}} .deepblue-depth .db-arc-value { stroke-width: 2.6; }
+.deepblue-panel{{{cns}}} .deepblue-depth .db-arc-glow  { stroke-width: 5.5; }
+.deepblue-panel{{{cns}}} .db-arc-hub {
+    fill: #04111d;
+    stroke: rgba(0,0,0,0.45);
+    stroke-width: 1.5;
+}
+.deepblue-panel{{{cns}}} .db-arc-dot { fill: rgba(72,214,230,0.55); }
+
+/* Pointer notch (rotates with the dial) — from 0.28r to 0.66r like the JUCE
+   pointer, so it stays inside the value arc. */
 .deepblue-panel{{{cns}}} .db-pointer {
     position: absolute;
-    left: 50%; top: 8%;
-    width: 2.5px; height: 30%;
+    left: 50%; top: 17%;
+    width: 2.5px; height: 19%;
     margin-left: -1.25px;
     border-radius: 2px;
-    background: #ffffff;
-    box-shadow: 0 0 7px rgba(72,214,230,0.9);
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 0 6px rgba(72,214,230,0.8);
 }
 .deepblue-panel{{{cns}}} .db-dial-big .db-pointer { width: 3.5px; margin-left: -1.75px; }
 

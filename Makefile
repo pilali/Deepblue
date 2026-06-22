@@ -14,7 +14,8 @@ ifeq ($(TARGET),rpi5)
     # Static libstdc++/libgcc: embed the C++ runtime so the .so doesn't depend
     # on the target system's libstdc++ version.
     override LDFLAGS  := -static-libstdc++ -static-libgcc
-    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=16 -DDEEPBLUE_BUBBLE_VOICES=16
+    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=16 -DDEEPBLUE_BUBBLE_VOICES=16 \
+                 -DDEEPBLUE_REVERB_LINES=8
 
 else ifeq ($(TARGET),moddwarf-new)
     # mod-plugin-builder injects CXX and CXXFLAGS via command-line args.
@@ -23,8 +24,10 @@ else ifeq ($(TARGET),moddwarf-new)
     CXXFLAGS ?= -std=c++17 -O3 -ffast-math \
                 -mcpu=cortex-a35 \
                 -fvisibility=hidden -Wall -Wextra -Wno-unused-parameter
-    # Short allpass chain and bubble pool to fit the Cortex-A35 CPU budget.
-    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=6 -DDEEPBLUE_BUBBLE_VOICES=6
+    # Short allpass chain, small bubble pool and a 4-line reverb to fit the
+    # Cortex-A35 CPU budget.
+    EXTRA_DEFS = -DDEEPBLUE_DISP_STAGES=6 -DDEEPBLUE_BUBBLE_VOICES=6 \
+                 -DDEEPBLUE_REVERB_LINES=4
 
 else  # native
     CXX      ?= g++

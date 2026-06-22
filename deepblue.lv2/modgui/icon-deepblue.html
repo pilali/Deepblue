@@ -21,11 +21,20 @@
 
     <!-- ── Central DEPTH macro ─────────────────────────────────────────── -->
     <div class="deepblue-depth">
-        <div class="db-dial db-dial-big"
-             mod-role="input-control-port"
-             mod-port-symbol="depth"
-             mod-widget-rotation="270">
-            <div class="db-pointer"></div>
+        <div class="db-dial-wrap">
+            <div class="db-dial db-dial-big"
+                 mod-role="input-control-port"
+                 mod-port-symbol="depth"
+                 mod-widget-rotation="270">
+                <div class="db-pointer"></div>
+            </div>
+            <svg class="db-arc" viewBox="0 0 100 100" data-arc="depth">
+                <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+            </svg>
         </div>
         <span class="db-label">DEPTH</span>
         <span class="db-value" data-port="depth"></span>
@@ -35,15 +44,42 @@
     <div class="deepblue-col deepblue-col-left">
         <div class="db-section">WATER · MOTION</div>
         <div class="db-knob" title="Tone">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="tone" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="tone" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="tone">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">TONE</span><span class="db-value" data-port="tone"></span>
         </div>
         <div class="db-knob" title="Wobble">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="wobble">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">WOBBLE</span><span class="db-value" data-port="wobble"></span>
         </div>
         <div class="db-knob" title="Dispersion">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="dispersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="dispersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="dispersion">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">DISPERSION</span><span class="db-value" data-port="dispersion"></span>
         </div>
     </div>
@@ -52,39 +88,111 @@
     <div class="deepblue-col deepblue-col-right">
         <div class="db-section">SPACE · OUTPUT</div>
         <div class="db-knob" title="Immersion">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="immersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="immersion" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="immersion">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">IMMERSION</span><span class="db-value" data-port="immersion"></span>
         </div>
         <div class="db-knob" title="Mix">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="mix" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="mix" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="mix">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">MIX</span><span class="db-value" data-port="mix"></span>
         </div>
-        <div class="db-knob" title="Level">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="level" mod-widget-rotation="270"><div class="db-pointer"></div></div>
-            <span class="db-label">LEVEL</span><span class="db-value" data-port="level"></span>
+        <div class="db-knob" title="Output">
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="level" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="level">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
+            <span class="db-label">OUTPUT</span><span class="db-value" data-port="level"></span>
         </div>
     </div>
 
     <!-- ── Bottom row ──────────────────────────────────────────────────── -->
     <div class="deepblue-row">
         <div class="db-knob" title="Wobble Rate">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble_rate" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="wobble_rate" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="wobble_rate">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">RATE</span><span class="db-value" data-port="wobble_rate"></span>
         </div>
         <div class="db-knob" title="Reverb">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="reverb">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">REVERB</span><span class="db-value" data-port="reverb"></span>
         </div>
         <div class="db-knob" title="Reverb Size">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="reverb_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="reverb_size">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">SIZE</span><span class="db-value" data-port="reverb_size"></span>
         </div>
         <div class="db-knob" title="Bubbles">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubbles" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubbles" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="bubbles">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">BUBBLES</span><span class="db-value" data-port="bubbles"></span>
         </div>
         <div class="db-knob" title="Bubble Size">
-            <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubble_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+            <div class="db-dial-wrap">
+                <div class="db-dial" mod-role="input-control-port" mod-port-symbol="bubble_size" mod-widget-rotation="270"><div class="db-pointer"></div></div>
+                <svg class="db-arc" viewBox="0 0 100 100" data-arc="bubble_size">
+                    <path class="db-arc-track" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100"/>
+                    <path class="db-arc-glow"  d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <path class="db-arc-value" d="M21.7 78.3 A40 40 0 1 1 78.3 78.3" pathLength="100" stroke-dasharray="0 100"/>
+                    <circle class="db-arc-hub" cx="50" cy="50" r="8"/>
+                    <circle class="db-arc-dot" cx="50" cy="50" r="2.5"/>
+                </svg>
+            </div>
             <span class="db-label">BUB SIZE</span><span class="db-value" data-port="bubble_size"></span>
         </div>
     </div>

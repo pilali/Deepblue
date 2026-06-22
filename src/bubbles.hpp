@@ -3,26 +3,37 @@
 #include <cstdint>
 #include <algorithm>
 
-// ── Minnaert bubble stream ───────────────────────────────────────────────────
+// ── Minnaert bubble filter-bank ──────────────────────────────────────────────
 //
-// A generative stream of bubble "pings". A gas bubble in water rings at its
-// Minnaert resonance (Minnaert, 1933):
+// A generative stream of bubble *resonances*. A gas bubble in water rings at
+// its Minnaert frequency (Minnaert, 1933):
 //
 //     f0 = (1 / 2πa) · √(3γP / ρ)        a = radius, γ = 1.4, ρ = 1000 kg/m³
 //
-// which at the surface is ≈ 3.28 / a Hz (a in metres): a 1 mm bubble pings at
-// ~3.3 kHz, a 5 mm one at ~660 Hz. Each ping is a short, exponentially-damped
-// sinusoid with a small *upward* frequency chirp during the decay — the
-// characteristic watery "bloop". Bubbles are emitted as a Poisson process.
+// which at the surface is ≈ 3.28 / a Hz (a in metres): a 0.4 mm bubble sits at
+// ~8 kHz, a 40 mm one — a very big "gloop" — down at ~80 Hz.
+//
+// A bubble here is NOT a sound of its own: it is a filter applied to the
+// signal. Each voice is a resonant band-pass (TPT / Zavalishin state-variable
+// filter) whose centre frequency sits at the bubble's Minnaert resonance and
+// glides *upward* as it fades (the characteristic watery chirp). The filter's
+// damping is the bubble's own physical damping (k = 2δ → Q ≈ 5–40), so the
+// voice *rings*: a transient excites it and it releases a decaying, chirping
+// tone at f0 — the bloop — yet every drop of that energy came from the player.
+// Silence in, silence out. Bubbles are emitted as a Poisson process.
+//
+// Feed the bank a full-bandwidth tap (the dry input, NOT the absorbed wet
+// signal): small bubbles ring at 4–16 kHz, a band the absorption low-pass has
+// already erased from the wet path — filtering the wet leaves them inaudible.
 //
 // Two physical hooks make the layer feel like one body of water with the rest
 // of the effect:
-//   • Depth raises the ambient pressure P, so f0 ∝ √P — deeper bubbles ping
+//   • Depth raises the ambient pressure P, so f0 ∝ √P — deeper bubbles ring
 //     higher. (~1 atm per 10.33 m of water.)
-//   • The whole bed is rolled off by a one-pole low-pass tracking the water's
-//     absorption cutoff, so deep water also makes the bubbles darker.
+//   • The summed resonances are rolled off by a one-pole low-pass tracking the
+//     water's absorption cutoff, so deep water also makes the bubbles darker.
 //
-// The generator is stereo: each bubble is panned at random (equal-power) so the
+// The bank is stereo: each bubble is panned at random (equal-power) so the
 // stream spreads naturally across the image. It is host-agnostic, allocation-
 // free and real-time safe — exactly like the rest of the DSP core.
 
@@ -40,7 +51,7 @@ public:
     }
 
     void reset() noexcept {
-        for (auto& v : _v) v.active = false;
+        for (auto& v : _v) { v.active = false; v.ic1 = v.ic2 = 0.0f; }
         _lpL = _lpR = 0.0f;
         // _rng deliberately keeps running across resets so the stream never
         // repeats the same pattern from one activation to the next.
@@ -48,7 +59,7 @@ public:
 
     // Refreshed once per block.
     //   density  [0–1]  Poisson rate of new bubbles (the "bubbles" knob).
-    //   size     [0–1]  central bubble radius → register (small/fizzy → big/gloopy).
+    //   size     [0–1]  central bubble radius → register (small/fizzy → huge/gloopy).
     //   depthM   metres of water → pressure → upward shift of every f0.
     //   bedCut   Hz     low-pass cutoff that darkens the bed (tracks absorption).
     void setParams(float density, float size, float depthM, float bedCut) noexcept {
@@ -63,9 +74,10 @@ public:
 
         // Keep the bed brighter than the guitar path — bubbles live up high, so
         // a one-pole tracking the raw absorption cutoff would erase them; this
-        // still darkens with depth, just more gently.
-        float fc = bedCut * 1.8f + 1200.0f;
-        fc = clampf(fc, 600.0f, 0.45f * (float)_sr);
+        // still darkens with depth, but stays open enough that the resonances
+        // really speak (the whole point of the filter is to be heard).
+        float fc = bedCut * 2.2f + 1800.0f;
+        fc = clampf(fc, 900.0f, 0.45f * (float)_sr);
         _bedG = 1.0f - std::exp(-2.0f * (float)M_PI * fc / (float)_sr);
     }
 
@@ -76,8 +88,9 @@ public:
         return false;
     }
 
-    // Advance one sample, returning the stereo bubble bed.
-    void tick(float& outL, float& outR) noexcept {
+    // Advance one sample. `in` is the (mono-folded) full-bandwidth source the
+    // bubbles filter; outL/outR receive the stereo resonances to sum into the wet.
+    void tick(float in, float& outL, float& outR) noexcept {
         // Poisson emission.
         if (_pSpawn > 0.0f && uniform() < _pSpawn) spawn();
 
@@ -85,14 +98,23 @@ public:
         for (auto& v : _v) {
             if (!v.active) continue;
 
-            const float s = v.env * std::sin(2.0f * (float)M_PI * v.phase);
+            // TPT state-variable band-pass at the chirping Minnaert frequency.
+            // Unconditionally stable, so the coefficient can glide per sample.
+            const float g  = std::tan((float)M_PI * v.freq / (float)_sr);
+            const float a1 = 1.0f / (1.0f + g * (g + v.res));
+            const float bp = a1 * (v.ic1 + g * (in - v.ic2));
+            const float lo = v.ic2 + g * bp;
+            v.ic1 = 2.0f * bp - v.ic1;
+            v.ic2 = 2.0f * lo - v.ic2;
+
+            // ×res normalises the band peak to unity regardless of Q; MAKEUP
+            // then lifts the narrow slice so the bloop sits on top of the wet.
+            const float s = bp * v.res * MAKEUP * v.env;
             l += s * v.ampL;
             r += s * v.ampR;
 
-            // Upward chirp: frequency glides toward its target as the ping fades.
+            // Upward chirp: the resonance glides up as the bubble fades.
             v.freq += (v.target - v.freq) * v.glide;
-            v.phase += v.freq / (float)_sr;
-            if (v.phase >= 1.0f) v.phase -= 1.0f;
 
             v.env *= v.decay;
             if (v.env < 1.0e-4f) v.active = false;
@@ -106,46 +128,62 @@ public:
     }
 
 private:
-    static constexpr float MAX_RATE = 32.0f;   // bubbles/second at full density
+    static constexpr float MAX_RATE = 46.0f;   // bubbles/second at full density
+    static constexpr float MAKEUP   = 9.0f;    // band-peak gain of one voice (≈ +19 dB)
 
     struct Voice {
         bool  active = false;
-        float phase  = 0.0f;
-        float freq   = 0.0f;   // current (chirping) frequency, Hz
+        float freq   = 0.0f;   // current (chirping) centre frequency, Hz
         float target = 0.0f;   // chirp destination, Hz
         float glide  = 0.0f;   // per-sample glide coefficient
-        float env    = 0.0f;   // amplitude envelope
+        float res    = 0.1f;   // SVF damping k = 2δ (1/Q) — the physical ring
+        float env    = 0.0f;   // amplitude envelope (slow gate over the ring)
         float decay  = 0.0f;   // per-sample env multiplier
+        float ic1    = 0.0f;   // SVF integrator states
+        float ic2    = 0.0f;
         float ampL   = 0.0f;
         float ampR   = 0.0f;
     };
 
     void spawn() noexcept {
-        // Central radius from the size knob: 0.4 mm (fizzy ~8 kHz) → 4 mm
-        // (gloopy ~0.8 kHz), each bubble jittered ±~1 octave around it.
-        const float aCenter = 0.0004f * std::pow(10.0f, _size);          // metres
+        // Central radius from the size knob: 0.4 mm (fizzy ~8 kHz) → 40 mm
+        // (a very big ~80 Hz gloop), each bubble jittered ±~1 octave around it.
+        const float aCenter = 0.0004f * std::pow(100.0f, _size);          // metres
         const float jitter  = std::pow(2.0f, (uniform() * 2.0f - 1.0f)); // ±1 oct
         const float a       = aCenter * jitter;
 
         float f0 = (3.283f / a) * _pressF;                  // Minnaert × pressure
-        f0 = clampf(f0, 100.0f, 0.45f * (float)_sr);
+        f0 = clampf(f0, 30.0f, 0.35f * (float)_sr);
 
         const float chirp  = 0.30f + 0.35f * uniform();     // upward glide amount
-        const float delta  = clampf(0.012f + 0.0009f * std::sqrt(f0), 0.012f, 0.09f);
+        // Lighter physical damping than before → higher Q and a longer ring, so
+        // each bloop stands out as a clear pitched resonance instead of a click.
+        const float delta  = clampf(0.008f + 0.0006f * std::sqrt(f0), 0.008f, 0.06f);
         const float decay  = std::exp(-2.0f * (float)M_PI * delta * f0 / (float)_sr);
+
+        // Guitar-like sources roll off steeply above the fundamental register,
+        // which would starve the small (high) bubbles while the big (low) ones
+        // sit right on the sustained fundamental and bloom: mirror that tilt so
+        // every register rings at a comparable level. Referenced at 500 Hz,
+        // −10 dB floor below it, +18 dB cap above.
+        const float tilt = clampf(f0 * (1.0f / 500.0f), 0.3f, 8.0f);
 
         // Equal-power random pan across the full image.
         const float pan = uniform() * 0.5f * (float)M_PI;   // 0 → π/2
-        const float amp = 0.6f * (0.55f + 0.45f * uniform());
+        const float amp = (0.55f + 0.45f * uniform()) * tilt;
 
         Voice& v = pick();
         v.active = true;
-        v.phase  = uniform();
         v.freq   = f0;
-        v.target = f0 * (1.0f + chirp);
-        v.glide  = 1.0f - decay;                            // chirp tracks the decay
+        v.target = clampf(f0 * (1.0f + chirp), f0, 0.45f * (float)_sr);
+        v.glide  = 1.0f - decay;                            // chirp tracks the ring
+        v.res    = clampf(2.0f * delta, 0.016f, 0.12f);     // physical damping → Q
         v.env    = 1.0f;
-        v.decay  = decay;
+        // The filter's own ring carries the physical decay; the envelope is a
+        // half-rate gate on top so it ends the voice without shortening it.
+        v.decay  = std::exp(-(float)M_PI * delta * f0 / (float)_sr);
+        v.ic1    = 0.0f;                                    // fresh filter state
+        v.ic2    = 0.0f;
         v.ampL   = amp * std::cos(pan);
         v.ampR   = amp * std::sin(pan);
     }

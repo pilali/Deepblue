@@ -19,6 +19,8 @@
 // stronger high-frequency absorption, more pitch wavering and more dispersion,
 // so one knob biases all three at once (with per-control trims on top). It also
 // raises the ambient pressure, so the bubble stream's Minnaert pings shift up.
+// Bubbles are not an added sound: each one is a resonant band-pass ringing off
+// the dry input at its Minnaert frequency, so the water bloops around the playing.
 
 #include "deepblue_dsp.h"
 
@@ -87,6 +89,7 @@ struct Macro {
     float reverbAmt;       // 0..1, reverb send into the wet
     float reverbG;         // feedback gain (decay / size)
     float reverbDamp;      // in-loop HF damping (darkness), depth/tone-derived
+    float reverbSize;      // 0..1, raw size → pre-delay (depth of the space)
 };
 
 static Macro computeMacro(const DeepblueParams* pr) {
@@ -117,10 +120,13 @@ static Macro computeMacro(const DeepblueParams* pr) {
     // water pulls the whole image toward "everywhere / inside the head".
     m.fieldAmt    = clampf(clampf(pr->immersion, 0.0f, 1.0f) * (0.4f + 0.6f * d), 0.0f, 1.0f);
 
-    // Reverb: amount is direct; size sets the decay (feedback gain); darkness
-    // tracks the water — deeper damps more highs, the Tone trim brightens it.
+    // Reverb: amount is direct; size sets the decay (feedback gain) and the
+    // pre-delay (how far the reflecting walls are); darkness tracks the water —
+    // deeper damps more highs, the Tone trim brightens it. The gain reaches
+    // further now (0.72 → 0.985) so big settings sustain a long, deep abyss.
     m.reverbAmt  = clampf(pr->reverb, 0.0f, 1.0f);
-    m.reverbG    = 0.55f + 0.42f * clampf(pr->reverb_size, 0.0f, 1.0f);   // 0.55 → 0.97
+    m.reverbSize = clampf(pr->reverb_size, 0.0f, 1.0f);
+    m.reverbG    = 0.72f + 0.265f * m.reverbSize;                          // 0.72 → 0.985
     m.reverbDamp = clampf(0.25f + 0.50f * d - (t - 0.5f) * 0.4f, 0.10f, 0.92f);
     return m;
 }
@@ -160,15 +166,24 @@ static inline float wobbleBase(double sr) {
     return WOBBLE_BASE_MS * (float)sr / 1000.0f;
 }
 
-// The bubble stream is one shared generator (stereo pings); the reverb is one
-// shared stereo FDN. Both feed the wet signal before the dry/wet mix.
+// Extra presence for the bubble filter on top of its per-voice makeup, so the
+// resonances clearly stand out in the wet rather than hiding under it. The
+// "bubbles" knob still scales the whole layer from silent to this ceiling.
+static constexpr float BUBBLE_PRESENCE = 1.7f;
+
+// The bubble stream is one shared filter-bank: each bubble is a resonant
+// band-pass ringing off the dry input (not an added sound — silence in,
+// silence out), panned in stereo. It must be fed pre-absorption: small bubbles
+// live at 4–16 kHz, which the wet path has already low-passed away. Its output
+// joins the wet, so the bed low-pass and the dry/wet mix still apply.
+// The reverb is one shared stereo FDN. Both feed the wet before the dry/wet mix.
 static void processMono(Channel& c, BubbleStream& bub, Reverb& rev,
                         const Macro& m, double sr,
                         const float* in, float* out, uint32_t n)
 {
     prepChannel(c, m, sr);
     bub.setParams(m.bubbleAmt, m.bubbleSize, m.depthMeters, m.cutoff);
-    rev.setParams(m.reverbG, m.reverbDamp);
+    rev.setParams(m.reverbG, m.reverbDamp, m.reverbSize);
     const float baseS = wobbleBase(sr);
     const float excS  = wobbleExc(m, sr);
     const bool  doRev = m.reverbAmt > 0.0f;
@@ -178,8 +193,8 @@ static void processMono(Channel& c, BubbleStream& bub, Reverb& rev,
         float w = channelWet(c, m, baseS, excS, x);
 
         float bl, br;
-        bub.tick(bl, br);
-        w += (bl + br) * 0.5f * m.bubbleAmt;        // bubbles folded to mono
+        bub.tick(x, bl, br);                        // bubbles ring off the dry input
+        w += (bl + br) * (0.5f * BUBBLE_PRESENCE) * m.bubbleAmt;   // folded to mono
 
         if (doRev) {
             float rL, rR;
@@ -202,7 +217,7 @@ static void processStereo(Channel& L, Channel& R, StereoField& field,
     prepChannel(L, m, sr);
     prepChannel(R, m, sr);
     bub.setParams(m.bubbleAmt, m.bubbleSize, m.depthMeters, m.cutoff);
-    rev.setParams(m.reverbG, m.reverbDamp);
+    rev.setParams(m.reverbG, m.reverbDamp, m.reverbSize);
     const float baseS = wobbleBase(sr);
     const float excS  = wobbleExc(m, sr);   // depth-derived, identical L/R
     const bool  doRev = m.reverbAmt > 0.0f;
@@ -215,9 +230,9 @@ static void processStereo(Channel& L, Channel& R, StereoField& field,
         field.process(m.fieldAmt, wL, wR);   // loss of localisation, on the wet
 
         float bl, br;
-        bub.tick(bl, br);
-        wL += bl * m.bubbleAmt;
-        wR += br * m.bubbleAmt;
+        bub.tick(0.5f * (xL + xR), bl, br);  // bubbles ring off the dry mid
+        wL += bl * BUBBLE_PRESENCE * m.bubbleAmt;
+        wR += br * BUBBLE_PRESENCE * m.bubbleAmt;
 
         if (doRev) {
             float rL, rR;

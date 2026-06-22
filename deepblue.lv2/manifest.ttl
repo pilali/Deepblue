@@ -32,4 +32,54 @@
     a pset:Preset ;
     rdfs:seeAlso <SubmergedCathedral.ttl> .
 
+<SurfaceTension.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <SurfaceTension.ttl> .
+
+<TidePool.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <TidePool.ttl> .
+
+<KelpForest.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <KelpForest.ttl> .
+
+<SonarPing.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <SonarPing.ttl> .
+
+<Mariana.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Mariana.ttl> .
+
+<DiversBubbles.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <DiversBubbles.ttl> .
+
+<Geyser.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Geyser.ttl> .
+
+<GlacialDrift.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <GlacialDrift.ttl> .
+
+<Riptide.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <Riptide.ttl> .
+
+<CathedralOfWhales.ttl>
+    lv2:appliesTo <https://github.com/pilali/deepblue> ;
+    a pset:Preset ;
+    rdfs:seeAlso <CathedralOfWhales.ttl> .
+
 <https://github.com/pilali/deepblue> rdfs:seeAlso <modgui.ttl> .

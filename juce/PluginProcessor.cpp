@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Presets.h"
 
 using APVTS = juce::AudioProcessorValueTreeState;
 using Range = juce::NormalisableRange<float>;
@@ -24,7 +25,7 @@ APVTS::ParameterLayout DeepblueAudioProcessor::createLayout()
     p.add(std::make_unique<AF>(pid("wobble_rate"), "Wobble Rate", rateRange, 0.3f, FA{}.withLabel("Hz")));
     p.add(std::make_unique<AF>(pid("dispersion"),  "Dispersion",  Range(0.0f, 1.0f), 0.4f));
     p.add(std::make_unique<AF>(pid("mix"),         "Mix",         Range(0.0f, 1.0f), 0.6f));
-    p.add(std::make_unique<AF>(pid("level"),       "Level",       Range(0.0f, 2.0f), 1.0f));
+    p.add(std::make_unique<AF>(pid("level"),       "Output",      Range(0.0f, 2.0f), 1.0f));
     p.add(std::make_unique<AF>(pid("bubbles"),     "Bubbles",     Range(0.0f, 1.0f), 0.0f));
     p.add(std::make_unique<AF>(pid("bubble_size"), "Bubble Size", Range(0.0f, 1.0f), 0.4f));
     p.add(std::make_unique<AF>(pid("immersion"),   "Immersion",   Range(0.0f, 1.0f), 0.4f));
@@ -123,6 +124,36 @@ void DeepblueAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         // Mono out (mono guitar pedal path).
         float* m = buffer.getWritePointer(0);
         deepblue_dsp_process(dsp, &p, m, m, (uint32_t) n);
+    }
+}
+
+// ── Factory presets ──────────────────────────────────────────────────────────
+// The same bank as the LV2 .ttl presets (juce/Presets.h). Selecting a program
+// writes its raw values onto the APVTS parameters, converting each through its
+// NormalisableRange so the skewed wobble_rate lands correctly.
+int DeepblueAudioProcessor::getNumPrograms()
+{
+    return (int) deepblue::kFactoryPresets.size();
+}
+
+const juce::String DeepblueAudioProcessor::getProgramName(int index)
+{
+    if (index < 0 || index >= getNumPrograms()) return {};
+    return deepblue::kFactoryPresets[(size_t) index].name;
+}
+
+void DeepblueAudioProcessor::setCurrentProgram(int index)
+{
+    if (index < 0 || index >= getNumPrograms()) return;
+    currentProgram = index;
+
+    const auto& preset = deepblue::kFactoryPresets[(size_t) index];
+    for (size_t i = 0; i < deepblue::kPresetSymbols.size(); ++i) {
+        if (auto* param = apvts.getParameter(deepblue::kPresetSymbols[i])) {
+            const float norm = param->getNormalisableRange()
+                                    .convertTo0to1(preset.values[i]);
+            param->setValueNotifyingHost(norm);
+        }
     }
 }
 
