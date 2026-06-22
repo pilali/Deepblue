@@ -26,10 +26,11 @@ public:
     bool isMidiEffect() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
 
-    int getNumPrograms() override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram(int) override {}
-    const juce::String getProgramName(int) override { return {}; }
+    // Factory presets (shared with the LV2 bundle — see juce/Presets.h).
+    int getNumPrograms() override;
+    int getCurrentProgram() override { return currentProgram; }
+    void setCurrentProgram(int) override;
+    const juce::String getProgramName(int) override;
     void changeProgramName(int, const juce::String&) override {}
 
     void getStateInformation(juce::MemoryBlock&) override;
@@ -42,6 +43,7 @@ private:
 
     DeepblueDsp* dsp = nullptr;
     double currentSampleRate = 0.0;
+    int currentProgram = 0;
     juce::AudioBuffer<float> rightScratch;   // mono-in → stereo-out right feed
 
     // Cached raw-parameter atomics (denormalised values, ready for DeepblueParams).

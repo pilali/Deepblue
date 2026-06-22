@@ -124,10 +124,17 @@ on the MOD Dwarf, **8** elsewhere for a denser, deeper tail.
 
 Steps 1–5 implemented: the full DSP (Absorption, Wobble, Depth macro, Dry/Wet,
 Dispersion, the Minnaert bubble layer, the StereoField loss-of-localisation
-stage, and the deep dark diffuse modulated-FDN reverb), five LV2 presets (Shallows,
-Deep Current, Abyss, Champagne, Submerged Cathedral), a custom "abyssal" JUCE
-editor and a matching MOD modgui. Step 6 finalises the JUCE VST3/AU/Windows
-builds (run on the target machine — JUCE is fetched at configure time).
+stage, and the deep dark diffuse modulated-FDN reverb), a 15-preset factory bank
+(Surface Tension, Shallows, Geyser, Champagne, Tide Pool, Diver's Bubbles,
+Riptide, Kelp Forest, Deep Current, Sonar Ping, Glacial Drift, Submerged
+Cathedral, Cathedral of Whales, Abyss, Mariana — ordered shallow/dry → deep/wet),
+a custom "abyssal" JUCE editor and a matching MOD modgui. Step 6 finalises the
+JUCE VST3/AU/Windows builds (run on the target machine — JUCE is fetched at
+configure time).
+
+The same bank ships in every format: as `pset:Preset` `.ttl` files in the LV2
+bundle, and as host **factory programs** in the JUCE VST3/AU/Standalone build
+(`juce/Presets.h`, kept value-for-value identical to the LV2 presets).
 
 The desktop editor and the MOD modgui share one visual language: a deep
 navy→black gradient with drifting caustic light, a large central Depth macro
