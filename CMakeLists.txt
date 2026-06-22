@@ -17,6 +17,11 @@ set(DEEPBLUE_DISP_STAGES "12" CACHE STRING
 set(DEEPBLUE_BUBBLE_VOICES "12" CACHE STRING
     "Bubble-stream voices (6 for MOD Dwarf, 12 native, 16 for Pi 5)")
 
+# Delay lines in the reverb FDN. 4 fits the MOD Dwarf; 8 gives a denser, deeper
+# tail on native / Pi 5. Must be an even count in [2,8].
+set(DEEPBLUE_REVERB_LINES "8" CACHE STRING
+    "Reverb FDN delay lines (4 for MOD Dwarf, 8 native / Pi 5)")
+
 set(BUNDLE_DIR "${CMAKE_BINARY_DIR}/deepblue.lv2")
 
 add_library(deepblue MODULE
@@ -28,7 +33,8 @@ target_include_directories(deepblue PRIVATE ${LV2_INCLUDE_DIRS} src)
 
 target_compile_definitions(deepblue PRIVATE
     DEEPBLUE_DISP_STAGES=${DEEPBLUE_DISP_STAGES}
-    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES})
+    DEEPBLUE_BUBBLE_VOICES=${DEEPBLUE_BUBBLE_VOICES}
+    DEEPBLUE_REVERB_LINES=${DEEPBLUE_REVERB_LINES})
 
 target_compile_options(deepblue PRIVATE
     -Wall -Wextra -Wno-unused-parameter
@@ -46,6 +52,7 @@ set_target_properties(deepblue PROPERTIES
 
 message(STATUS "Dispersion stages: ${DEEPBLUE_DISP_STAGES}")
 message(STATUS "Bubble voices:     ${DEEPBLUE_BUBBLE_VOICES}")
+message(STATUS "Reverb lines:      ${DEEPBLUE_REVERB_LINES}")
 
 # Copy every TTL in the source bundle (manifest, plugin descriptor and the
 # preset files) next to the freshly built .so.

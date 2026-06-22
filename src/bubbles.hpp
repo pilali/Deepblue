@@ -74,9 +74,10 @@ public:
 
         // Keep the bed brighter than the guitar path — bubbles live up high, so
         // a one-pole tracking the raw absorption cutoff would erase them; this
-        // still darkens with depth, just more gently.
-        float fc = bedCut * 1.8f + 1200.0f;
-        fc = clampf(fc, 600.0f, 0.45f * (float)_sr);
+        // still darkens with depth, but stays open enough that the resonances
+        // really speak (the whole point of the filter is to be heard).
+        float fc = bedCut * 2.2f + 1800.0f;
+        fc = clampf(fc, 900.0f, 0.45f * (float)_sr);
         _bedG = 1.0f - std::exp(-2.0f * (float)M_PI * fc / (float)_sr);
     }
 
@@ -127,8 +128,8 @@ public:
     }
 
 private:
-    static constexpr float MAX_RATE = 32.0f;   // bubbles/second at full density
-    static constexpr float MAKEUP   = 5.0f;    // band-peak gain of one voice (≈ +14 dB)
+    static constexpr float MAX_RATE = 46.0f;   // bubbles/second at full density
+    static constexpr float MAKEUP   = 9.0f;    // band-peak gain of one voice (≈ +19 dB)
 
     struct Voice {
         bool  active = false;
@@ -155,7 +156,9 @@ private:
         f0 = clampf(f0, 30.0f, 0.35f * (float)_sr);
 
         const float chirp  = 0.30f + 0.35f * uniform();     // upward glide amount
-        const float delta  = clampf(0.012f + 0.0009f * std::sqrt(f0), 0.012f, 0.09f);
+        // Lighter physical damping than before → higher Q and a longer ring, so
+        // each bloop stands out as a clear pitched resonance instead of a click.
+        const float delta  = clampf(0.008f + 0.0006f * std::sqrt(f0), 0.008f, 0.06f);
         const float decay  = std::exp(-2.0f * (float)M_PI * delta * f0 / (float)_sr);
 
         // Guitar-like sources roll off steeply above the fundamental register,
@@ -174,7 +177,7 @@ private:
         v.freq   = f0;
         v.target = clampf(f0 * (1.0f + chirp), f0, 0.45f * (float)_sr);
         v.glide  = 1.0f - decay;                            // chirp tracks the ring
-        v.res    = clampf(2.0f * delta, 0.024f, 0.18f);     // physical damping → Q
+        v.res    = clampf(2.0f * delta, 0.016f, 0.12f);     // physical damping → Q
         v.env    = 1.0f;
         // The filter's own ring carries the physical decay; the envelope is a
         // half-rate gate on top so it ends the voice without shortening it.

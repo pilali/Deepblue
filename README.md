@@ -45,7 +45,10 @@ ringing off the full-bandwidth input at the Minnaert resonance of a gas bubble
 in water (`f₀ = (1/2πa)·√(3γP/ρ)` ≈ 3.28/a Hz at the surface), with the bubble's
 own physical damping as the filter Q, chirping upward as it decays — the watery
 "bloop" — so the water bubbles around whatever you play (silence in, silence
-out). Bubble Size spans 0.4 mm fizz (~8 kHz) down to a very big 40 mm gloop
+out). The resonances are deliberately voiced to **stand out**: lighter damping
+(higher Q + a longer ring), more makeup gain, a denser stream and a brighter bed
+so each bloop reads as a clear pitched resonance instead of a faint click.
+Bubble Size spans 0.4 mm fizz (~8 kHz) down to a very big 40 mm gloop
 (~80 Hz). Depth raises the ambient pressure, so deeper water shifts every bubble
 up (`f₀ ∝ √P`) while the bed is rolled off to stay coherent with the absorption.
 Each bubble is panned at random for a naturally wide stream.
@@ -114,12 +117,14 @@ artefacts. The MOD Dwarf package is built separately via `mod-plugin-builder`.
 `DEEPBLUE_DISP_STAGES` sets the number of first-order allpass sections (the most
 CPU-hungry part). `DEEPBLUE_BUBBLE_VOICES` sets the bubble-stream polyphony.
 Both default to **6** (MOD Dwarf), **12** (native), **16** (Pi 5 / desktop JUCE).
+`DEEPBLUE_REVERB_LINES` sets the reverb FDN size (an even count in [2,8]): **4**
+on the MOD Dwarf, **8** elsewhere for a denser, deeper tail.
 
 ## Status
 
 Steps 1–5 implemented: the full DSP (Absorption, Wobble, Depth macro, Dry/Wet,
 Dispersion, the Minnaert bubble layer, the StereoField loss-of-localisation
-stage, and the dark diffuse 4-line-FDN reverb), five LV2 presets (Shallows,
+stage, and the deep dark diffuse modulated-FDN reverb), five LV2 presets (Shallows,
 Deep Current, Abyss, Champagne, Submerged Cathedral), a custom "abyssal" JUCE
 editor and a matching MOD modgui. Step 6 finalises the JUCE VST3/AU/Windows
 builds (run on the target machine — JUCE is fetched at configure time).
