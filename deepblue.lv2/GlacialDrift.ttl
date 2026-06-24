@@ -11,7 +11,7 @@
 		pset:value 0.6
 	] , [
 		lv2:symbol "bubbles" ;
-		pset:value 0.15
+		pset:value 0.04
 	] , [
 		lv2:symbol "depth" ;
 		pset:value 0.7
@@ -23,19 +23,19 @@
 		pset:value 0.7
 	] , [
 		lv2:symbol "level" ;
-		pset:value 1.0
+		pset:value 1.4
 	] , [
 		lv2:symbol "mix" ;
 		pset:value 0.75
 	] , [
 		lv2:symbol "reverb" ;
-		pset:value 0.65
+		pset:value 0.67
 	] , [
 		lv2:symbol "reverb_size" ;
 		pset:value 0.85
 	] , [
 		lv2:symbol "tone" ;
-		pset:value 0.35
+		pset:value 0.5
 	] , [
 		lv2:symbol "wobble" ;
 		pset:value 0.4

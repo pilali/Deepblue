@@ -8,38 +8,38 @@
 	rdfs:label "Cathedral of Whales" ;
 	lv2:port [
 		lv2:symbol "bubble_size" ;
-		pset:value 0.9
+		pset:value 0.93
 	] , [
 		lv2:symbol "bubbles" ;
-		pset:value 0.5
+		pset:value 0.57
 	] , [
 		lv2:symbol "depth" ;
-		pset:value 0.85
+		pset:value 0.43
 	] , [
 		lv2:symbol "dispersion" ;
-		pset:value 0.65
+		pset:value 0.52
 	] , [
 		lv2:symbol "immersion" ;
-		pset:value 0.85
+		pset:value 0.72
 	] , [
 		lv2:symbol "level" ;
-		pset:value 0.9
-	] , [
-		lv2:symbol "mix" ;
-		pset:value 0.9
-	] , [
-		lv2:symbol "reverb" ;
-		pset:value 0.8
-	] , [
-		lv2:symbol "reverb_size" ;
 		pset:value 1.0
 	] , [
+		lv2:symbol "mix" ;
+		pset:value 0.8
+	] , [
+		lv2:symbol "reverb" ;
+		pset:value 0.86
+	] , [
+		lv2:symbol "reverb_size" ;
+		pset:value 0.72
+	] , [
 		lv2:symbol "tone" ;
-		pset:value 0.3
+		pset:value 0.79
 	] , [
 		lv2:symbol "wobble" ;
-		pset:value 0.45
+		pset:value 0.96
 	] , [
 		lv2:symbol "wobble_rate" ;
-		pset:value 0.12
+		pset:value 0.19
 	] .
