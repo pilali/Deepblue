@@ -8,37 +8,37 @@
 	rdfs:label "Champagne" ;
 	lv2:port [
 		lv2:symbol "bubble_size" ;
-		pset:value 0.18
+		pset:value 0.04
 	] , [
 		lv2:symbol "bubbles" ;
 		pset:value 0.7
 	] , [
 		lv2:symbol "depth" ;
-		pset:value 0.4
+		pset:value 0.78
 	] , [
 		lv2:symbol "dispersion" ;
 		pset:value 0.3
 	] , [
 		lv2:symbol "immersion" ;
-		pset:value 0.4
+		pset:value 0.13
 	] , [
 		lv2:symbol "level" ;
-		pset:value 1.0
+		pset:value 1.5
 	] , [
 		lv2:symbol "mix" ;
-		pset:value 0.6
-	] , [
-		lv2:symbol "reverb" ;
-		pset:value 0.3
-	] , [
-		lv2:symbol "reverb_size" ;
 		pset:value 0.5
 	] , [
+		lv2:symbol "reverb" ;
+		pset:value 0.68
+	] , [
+		lv2:symbol "reverb_size" ;
+		pset:value 0.09
+	] , [
 		lv2:symbol "tone" ;
-		pset:value 0.7
+		pset:value 0.61
 	] , [
 		lv2:symbol "wobble" ;
-		pset:value 0.2
+		pset:value 0.04
 	] , [
 		lv2:symbol "wobble_rate" ;
 		pset:value 0.6

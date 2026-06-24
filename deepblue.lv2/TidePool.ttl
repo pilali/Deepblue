@@ -11,7 +11,7 @@
 		pset:value 0.4
 	] , [
 		lv2:symbol "bubbles" ;
-		pset:value 0.4
+		pset:value 0.1
 	] , [
 		lv2:symbol "depth" ;
 		pset:value 0.35

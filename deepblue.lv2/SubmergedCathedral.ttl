@@ -35,7 +35,7 @@
 		pset:value 0.95
 	] , [
 		lv2:symbol "tone" ;
-		pset:value 0.4
+		pset:value 0.85
 	] , [
 		lv2:symbol "wobble" ;
 		pset:value 0.35

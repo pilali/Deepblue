@@ -14,31 +14,31 @@
 		pset:value 0.3
 	] , [
 		lv2:symbol "depth" ;
-		pset:value 1.0
-	] , [
-		lv2:symbol "dispersion" ;
 		pset:value 0.8
 	] , [
+		lv2:symbol "dispersion" ;
+		pset:value 0.75
+	] , [
 		lv2:symbol "immersion" ;
-		pset:value 0.9
+		pset:value 0.69
 	] , [
 		lv2:symbol "level" ;
-		pset:value 0.9
+		pset:value 2.0
 	] , [
 		lv2:symbol "mix" ;
-		pset:value 0.85
+		pset:value 0.9
 	] , [
 		lv2:symbol "reverb" ;
-		pset:value 0.7
+		pset:value 0.84
 	] , [
 		lv2:symbol "reverb_size" ;
 		pset:value 0.95
 	] , [
 		lv2:symbol "tone" ;
-		pset:value 0.2
+		pset:value 0.85
 	] , [
 		lv2:symbol "wobble" ;
-		pset:value 0.5
+		pset:value 0.75
 	] , [
 		lv2:symbol "wobble_rate" ;
 		pset:value 0.1
